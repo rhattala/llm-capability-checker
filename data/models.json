@@ -1,0 +1,701 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-01-15T00:00:00Z",
+  "description": "LLM model database with hardware requirements and performance estimates",
+  "models": [
+    {
+      "id": "llama-3.2-1b",
+      "name": "Llama 3.2 1B",
+      "family": "llama",
+      "parameter_count": 1,
+      "parameter_count_raw": 1000000000,
+      "provider": "Meta",
+      "license": "llama-3.2-community",
+      "use_cases": ["general", "chat", "mobile"],
+      "popularity_rank": 15,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 4,
+          "ram_gb": 8,
+          "storage_gb": 4,
+          "min_inference_score": 200,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 150,
+            "gpu_tier_mid": 80,
+            "gpu_tier_low": 40,
+            "cpu_only": 15
+          }
+        },
+        "fp16": {
+          "vram_gb": 2,
+          "ram_gb": 4,
+          "storage_gb": 2,
+          "min_inference_score": 150,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 200,
+            "gpu_tier_mid": 100,
+            "gpu_tier_low": 50,
+            "cpu_only": 20
+          }
+        },
+        "8bit": {
+          "vram_gb": 1,
+          "ram_gb": 3,
+          "storage_gb": 1,
+          "min_inference_score": 100,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 180,
+            "gpu_tier_mid": 90,
+            "gpu_tier_low": 45,
+            "cpu_only": 18
+          }
+        },
+        "4bit": {
+          "vram_gb": 1,
+          "ram_gb": 2,
+          "storage_gb": 1,
+          "min_inference_score": 50,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 150,
+            "gpu_tier_mid": 75,
+            "gpu_tier_low": 35,
+            "cpu_only": 12
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 16,
+          "ram_gb": 32,
+          "min_training_score": 600,
+          "estimated_time_per_epoch_hours": 4
+        },
+        "lora": {
+          "vram_gb": 6,
+          "ram_gb": 12,
+          "min_training_score": 400,
+          "estimated_time_per_epoch_hours": 2
+        },
+        "qlora": {
+          "vram_gb": 3,
+          "ram_gb": 8,
+          "min_training_score": 300,
+          "estimated_time_per_epoch_hours": 2.5
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": true,
+      "notes": "Excellent for learning and experimentation. Very lightweight and fast."
+    },
+    {
+      "id": "llama-3.1-8b",
+      "name": "Llama 3.1 8B",
+      "family": "llama",
+      "parameter_count": 8,
+      "parameter_count_raw": 8000000000,
+      "provider": "Meta",
+      "license": "llama-3.1-community",
+      "use_cases": ["general", "coding", "chat"],
+      "popularity_rank": 3,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 32,
+          "ram_gb": 40,
+          "storage_gb": 30,
+          "min_inference_score": 600,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 80,
+            "gpu_tier_mid": 35,
+            "gpu_tier_low": 15,
+            "cpu_only": 5
+          }
+        },
+        "fp16": {
+          "vram_gb": 16,
+          "ram_gb": 24,
+          "storage_gb": 16,
+          "min_inference_score": 500,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 100,
+            "gpu_tier_mid": 45,
+            "gpu_tier_low": 20,
+            "cpu_only": 8
+          }
+        },
+        "8bit": {
+          "vram_gb": 10,
+          "ram_gb": 16,
+          "storage_gb": 9,
+          "min_inference_score": 400,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 90,
+            "gpu_tier_mid": 40,
+            "gpu_tier_low": 18,
+            "cpu_only": 6
+          }
+        },
+        "4bit": {
+          "vram_gb": 6,
+          "ram_gb": 12,
+          "storage_gb": 5,
+          "min_inference_score": 300,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 70,
+            "gpu_tier_mid": 30,
+            "gpu_tier_low": 12,
+            "cpu_only": 4
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 80,
+          "ram_gb": 128,
+          "min_training_score": 800,
+          "estimated_time_per_epoch_hours": 24
+        },
+        "lora": {
+          "vram_gb": 24,
+          "ram_gb": 48,
+          "min_training_score": 600,
+          "estimated_time_per_epoch_hours": 8
+        },
+        "qlora": {
+          "vram_gb": 12,
+          "ram_gb": 24,
+          "min_training_score": 500,
+          "estimated_time_per_epoch_hours": 10
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": true,
+      "notes": "Excellent all-around model, good balance of capability and hardware requirements. Great for most use cases."
+    },
+    {
+      "id": "mistral-7b",
+      "name": "Mistral 7B",
+      "family": "mistral",
+      "parameter_count": 7,
+      "parameter_count_raw": 7000000000,
+      "provider": "Mistral AI",
+      "license": "Apache 2.0",
+      "use_cases": ["general", "coding", "chat"],
+      "popularity_rank": 5,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 28,
+          "ram_gb": 35,
+          "storage_gb": 27,
+          "min_inference_score": 550,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 85,
+            "gpu_tier_mid": 38,
+            "gpu_tier_low": 16,
+            "cpu_only": 5
+          }
+        },
+        "fp16": {
+          "vram_gb": 14,
+          "ram_gb": 20,
+          "storage_gb": 14,
+          "min_inference_score": 450,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 105,
+            "gpu_tier_mid": 48,
+            "gpu_tier_low": 22,
+            "cpu_only": 8
+          }
+        },
+        "8bit": {
+          "vram_gb": 9,
+          "ram_gb": 14,
+          "storage_gb": 8,
+          "min_inference_score": 380,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 95,
+            "gpu_tier_mid": 42,
+            "gpu_tier_low": 19,
+            "cpu_only": 6
+          }
+        },
+        "4bit": {
+          "vram_gb": 5,
+          "ram_gb": 10,
+          "storage_gb": 4,
+          "min_inference_score": 280,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 75,
+            "gpu_tier_mid": 32,
+            "gpu_tier_low": 13,
+            "cpu_only": 4
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 70,
+          "ram_gb": 112,
+          "min_training_score": 750,
+          "estimated_time_per_epoch_hours": 20
+        },
+        "lora": {
+          "vram_gb": 20,
+          "ram_gb": 40,
+          "min_training_score": 550,
+          "estimated_time_per_epoch_hours": 7
+        },
+        "qlora": {
+          "vram_gb": 10,
+          "ram_gb": 20,
+          "min_training_score": 450,
+          "estimated_time_per_epoch_hours": 9
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": true,
+      "notes": "Excellent performance-to-size ratio. Open license makes it great for commercial use."
+    },
+    {
+      "id": "deepseek-coder-6.7b",
+      "name": "DeepSeek Coder 6.7B",
+      "family": "deepseek",
+      "parameter_count": 7,
+      "parameter_count_raw": 6700000000,
+      "provider": "DeepSeek",
+      "license": "DeepSeek",
+      "use_cases": ["coding"],
+      "popularity_rank": 8,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 27,
+          "ram_gb": 32,
+          "storage_gb": 26,
+          "min_inference_score": 540,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 90,
+            "gpu_tier_mid": 40,
+            "gpu_tier_low": 18,
+            "cpu_only": 6
+          }
+        },
+        "fp16": {
+          "vram_gb": 14,
+          "ram_gb": 18,
+          "storage_gb": 13,
+          "min_inference_score": 440,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 110,
+            "gpu_tier_mid": 50,
+            "gpu_tier_low": 23,
+            "cpu_only": 9
+          }
+        },
+        "8bit": {
+          "vram_gb": 8,
+          "ram_gb": 13,
+          "storage_gb": 7,
+          "min_inference_score": 370,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 100,
+            "gpu_tier_mid": 44,
+            "gpu_tier_low": 20,
+            "cpu_only": 7
+          }
+        },
+        "4bit": {
+          "vram_gb": 5,
+          "ram_gb": 9,
+          "storage_gb": 4,
+          "min_inference_score": 270,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 80,
+            "gpu_tier_mid": 34,
+            "gpu_tier_low": 14,
+            "cpu_only": 5
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 65,
+          "ram_gb": 100,
+          "min_training_score": 730,
+          "estimated_time_per_epoch_hours": 18
+        },
+        "lora": {
+          "vram_gb": 18,
+          "ram_gb": 36,
+          "min_training_score": 530,
+          "estimated_time_per_epoch_hours": 6
+        },
+        "qlora": {
+          "vram_gb": 9,
+          "ram_gb": 18,
+          "min_training_score": 430,
+          "estimated_time_per_epoch_hours": 8
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": false
+      },
+      "recommended_for_beginners": false,
+      "notes": "Specialized for code generation. Best performance for programming tasks."
+    },
+    {
+      "id": "gemma-2-9b",
+      "name": "Gemma 2 9B",
+      "family": "gemma",
+      "parameter_count": 9,
+      "parameter_count_raw": 9000000000,
+      "provider": "Google",
+      "license": "Gemma Terms of Use",
+      "use_cases": ["general", "chat"],
+      "popularity_rank": 10,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 36,
+          "ram_gb": 45,
+          "storage_gb": 34,
+          "min_inference_score": 650,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 75,
+            "gpu_tier_mid": 32,
+            "gpu_tier_low": 14,
+            "cpu_only": 4
+          }
+        },
+        "fp16": {
+          "vram_gb": 18,
+          "ram_gb": 26,
+          "storage_gb": 17,
+          "min_inference_score": 530,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 95,
+            "gpu_tier_mid": 42,
+            "gpu_tier_low": 18,
+            "cpu_only": 7
+          }
+        },
+        "8bit": {
+          "vram_gb": 11,
+          "ram_gb": 18,
+          "storage_gb": 10,
+          "min_inference_score": 420,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 85,
+            "gpu_tier_mid": 38,
+            "gpu_tier_low": 16,
+            "cpu_only": 5
+          }
+        },
+        "4bit": {
+          "vram_gb": 6,
+          "ram_gb": 13,
+          "storage_gb": 5,
+          "min_inference_score": 320,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 65,
+            "gpu_tier_mid": 28,
+            "gpu_tier_low": 11,
+            "cpu_only": 3
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 90,
+          "ram_gb": 140,
+          "min_training_score": 820,
+          "estimated_time_per_epoch_hours": 28
+        },
+        "lora": {
+          "vram_gb": 26,
+          "ram_gb": 52,
+          "min_training_score": 620,
+          "estimated_time_per_epoch_hours": 9
+        },
+        "qlora": {
+          "vram_gb": 13,
+          "ram_gb": 26,
+          "min_training_score": 520,
+          "estimated_time_per_epoch_hours": 11
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": true,
+      "notes": "Google's open model with strong general capabilities."
+    },
+    {
+      "id": "llama-3.1-70b",
+      "name": "Llama 3.1 70B",
+      "family": "llama",
+      "parameter_count": 70,
+      "parameter_count_raw": 70000000000,
+      "provider": "Meta",
+      "license": "llama-3.1-community",
+      "use_cases": ["general", "coding", "chat", "reasoning"],
+      "popularity_rank": 2,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 280,
+          "ram_gb": 320,
+          "storage_gb": 260,
+          "min_inference_score": 900,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 25,
+            "gpu_tier_mid": 10,
+            "gpu_tier_low": 4,
+            "cpu_only": 1
+          }
+        },
+        "fp16": {
+          "vram_gb": 140,
+          "ram_gb": 160,
+          "storage_gb": 130,
+          "min_inference_score": 850,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 35,
+            "gpu_tier_mid": 15,
+            "gpu_tier_low": 6,
+            "cpu_only": 2
+          }
+        },
+        "8bit": {
+          "vram_gb": 75,
+          "ram_gb": 90,
+          "storage_gb": 70,
+          "min_inference_score": 750,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 30,
+            "gpu_tier_mid": 12,
+            "gpu_tier_low": 5,
+            "cpu_only": 1
+          }
+        },
+        "4bit": {
+          "vram_gb": 40,
+          "ram_gb": 50,
+          "storage_gb": 36,
+          "min_inference_score": 650,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 22,
+            "gpu_tier_mid": 9,
+            "gpu_tier_low": 3,
+            "cpu_only": 1
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 640,
+          "ram_gb": 1024,
+          "min_training_score": 980,
+          "estimated_time_per_epoch_hours": 240
+        },
+        "lora": {
+          "vram_gb": 160,
+          "ram_gb": 320,
+          "min_training_score": 880,
+          "estimated_time_per_epoch_hours": 80
+        },
+        "qlora": {
+          "vram_gb": 80,
+          "ram_gb": 160,
+          "min_training_score": 780,
+          "estimated_time_per_epoch_hours": 100
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": false,
+      "notes": "High-end model with exceptional capabilities. Requires substantial hardware."
+    },
+    {
+      "id": "phi-4",
+      "name": "Phi-4 14B",
+      "family": "phi",
+      "parameter_count": 14,
+      "parameter_count_raw": 14000000000,
+      "provider": "Microsoft",
+      "license": "MIT",
+      "use_cases": ["general", "reasoning", "chat"],
+      "popularity_rank": 12,
+      "requirements": {
+        "fp32": {
+          "vram_gb": 56,
+          "ram_gb": 65,
+          "storage_gb": 53,
+          "min_inference_score": 700,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 60,
+            "gpu_tier_mid": 26,
+            "gpu_tier_low": 11,
+            "cpu_only": 3
+          }
+        },
+        "fp16": {
+          "vram_gb": 28,
+          "ram_gb": 36,
+          "storage_gb": 27,
+          "min_inference_score": 580,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 80,
+            "gpu_tier_mid": 35,
+            "gpu_tier_low": 15,
+            "cpu_only": 5
+          }
+        },
+        "8bit": {
+          "vram_gb": 16,
+          "ram_gb": 24,
+          "storage_gb": 15,
+          "min_inference_score": 470,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 70,
+            "gpu_tier_mid": 30,
+            "gpu_tier_low": 12,
+            "cpu_only": 4
+          }
+        },
+        "4bit": {
+          "vram_gb": 9,
+          "ram_gb": 16,
+          "storage_gb": 8,
+          "min_inference_score": 360,
+          "estimated_tokens_per_sec": {
+            "gpu_tier_high": 55,
+            "gpu_tier_mid": 22,
+            "gpu_tier_low": 9,
+            "cpu_only": 2
+          }
+        }
+      },
+      "training_requirements": {
+        "full_finetune": {
+          "vram_gb": 140,
+          "ram_gb": 220,
+          "min_training_score": 850,
+          "estimated_time_per_epoch_hours": 48
+        },
+        "lora": {
+          "vram_gb": 40,
+          "ram_gb": 80,
+          "min_training_score": 650,
+          "estimated_time_per_epoch_hours": 16
+        },
+        "qlora": {
+          "vram_gb": 20,
+          "ram_gb": 40,
+          "min_training_score": 550,
+          "estimated_time_per_epoch_hours": 20
+        }
+      },
+      "framework_support": {
+        "llama_cpp": true,
+        "gguf": true,
+        "pytorch": true,
+        "transformers": true,
+        "ollama": true,
+        "lm_studio": true,
+        "exllama": true
+      },
+      "recommended_for_beginners": false,
+      "notes": "Strong reasoning capabilities. Relatively new model with excellent performance for size."
+    }
+  ],
+  "gpu_tiers": {
+    "high": {
+      "description": "High-end consumer and professional GPUs",
+      "examples": ["RTX 4090", "RTX 4080", "RTX 4070 Ti", "A6000", "A5000", "H100"],
+      "min_vram": 16,
+      "min_compute_score": 800
+    },
+    "mid": {
+      "description": "Mid-range consumer GPUs",
+      "examples": ["RTX 4070", "RTX 4060 Ti", "RTX 3080", "RX 7800 XT", "RX 7700 XT"],
+      "min_vram": 10,
+      "min_compute_score": 500
+    },
+    "low": {
+      "description": "Entry-level GPUs and older generation",
+      "examples": ["RTX 4060", "RTX 3060", "RX 6700 XT", "RTX 3050"],
+      "min_vram": 6,
+      "min_compute_score": 300
+    }
+  },
+  "quantization_info": {
+    "fp32": {
+      "name": "Full Precision (32-bit floating point)",
+      "quality": "Maximum",
+      "speed": "Slowest",
+      "memory": "4x",
+      "description": "Highest quality but requires most memory and slowest inference"
+    },
+    "fp16": {
+      "name": "Half Precision (16-bit floating point)",
+      "quality": "Very High",
+      "speed": "Fast",
+      "memory": "2x",
+      "description": "Minimal quality loss with 2x memory reduction. Best balance for most use cases."
+    },
+    "8bit": {
+      "name": "8-bit Quantization",
+      "quality": "High",
+      "speed": "Faster",
+      "memory": "1.5x",
+      "description": "Good quality with significant memory savings. Recommended for most users."
+    },
+    "4bit": {
+      "name": "4-bit Quantization",
+      "quality": "Good",
+      "speed": "Fastest",
+      "memory": "1x",
+      "description": "Noticeable but acceptable quality loss. Enables running larger models on limited hardware."
+    }
+  }
+}
