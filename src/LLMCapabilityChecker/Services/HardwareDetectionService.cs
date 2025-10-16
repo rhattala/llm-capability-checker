@@ -2,6 +2,7 @@ using LLMCapabilityChecker.Helpers;
 using LLMCapabilityChecker.Models;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -650,58 +651,94 @@ public class HardwareDetectionService : IHardwareDetectionService
                     storageInfo.AvailableGB = SystemInfoHelper.BytesToGB(freeBytes);
                 }
 
-                // PRIORITY 1: Try MSFT_PhysicalDisk first (most accurate for NVMe detection)
+                // PRIORITY 1: Query ALL physical disks and pick the fastest one
                 bool detectedType = false;
+                string fastestDriveType = "SSD";
+                int driveCount = 0;
+
                 try
                 {
+                    // Query ALL drives, not just DeviceId='0'
                     using var msftSearcher = new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage",
-                        "SELECT * FROM MSFT_PhysicalDisk WHERE DeviceId='0'");
+                        "SELECT * FROM MSFT_PhysicalDisk");
                     using var msftCollection = msftSearcher.Get();
 
-                    var msftDisk = msftCollection.Cast<ManagementObject>().FirstOrDefault();
-                    if (msftDisk != null)
-                    {
-                        ushort mediaType = Convert.ToUInt16(msftDisk["MediaType"] ?? 0);
-                        ushort busType = Convert.ToUInt16(msftDisk["BusType"] ?? 0);
-                        string model = msftDisk["Model"]?.ToString() ?? "";
-                        string friendlyName = msftDisk["FriendlyName"]?.ToString() ?? "";
+                    _logger.LogDebug("MSFT_PhysicalDisk query returned {Count} drives", msftCollection.Count);
 
-                        _logger.LogDebug("MSFT_PhysicalDisk: MediaType={MediaType}, BusType={BusType}, Model={Model}, FriendlyName={FriendlyName}",
-                            mediaType, busType, model, friendlyName);
+                    var drives = new List<(string Type, int Priority, string Model)>();
+
+                    foreach (var physicalDisk in msftCollection.Cast<ManagementObject>())
+                    {
+                        ushort mediaType = Convert.ToUInt16(physicalDisk["MediaType"] ?? 0);
+                        ushort busType = Convert.ToUInt16(physicalDisk["BusType"] ?? 0);
+                        string model = physicalDisk["Model"]?.ToString() ?? "";
+                        string friendlyName = physicalDisk["FriendlyName"]?.ToString() ?? "";
+                        string deviceId = physicalDisk["DeviceId"]?.ToString() ?? "";
+
+                        _logger.LogDebug("MSFT_PhysicalDisk DeviceId={DeviceId}: MediaType={MediaType}, BusType={BusType}, Model={Model}",
+                            deviceId, mediaType, busType, model);
+
+                        // Determine type and priority (higher = faster)
+                        string driveType = "Unknown";
+                        int priority = 0;
 
                         // MediaType: 3 = HDD, 4 = SSD, 5 = SCM
-                        // BusType: 17 = NVMe, 11 = SATA, 7 = USB, 15 = USB, 1 = SCSI
+                        // BusType: 17 = NVMe, 11 = SATA, 7 = USB
                         if (busType == 17)
                         {
-                            storageInfo.Type = "NVMe";
-                            detectedType = true;
-                            _logger.LogInformation("Detected NVMe drive via BusType=17: {Model}", model);
+                            driveType = "NVMe";
+                            priority = 100; // Highest priority
                         }
                         else if (mediaType == 4)
                         {
                             // Check model name for NVMe indicators even if BusType isn't 17
                             if (model.Contains("NVMe", StringComparison.OrdinalIgnoreCase) ||
                                 friendlyName.Contains("NVMe", StringComparison.OrdinalIgnoreCase) ||
-                                model.Contains("Samsung 9", StringComparison.OrdinalIgnoreCase) || // Samsung 970/980/990
                                 model.Contains("WD_BLACK", StringComparison.OrdinalIgnoreCase) ||
                                 model.Contains("WD Black", StringComparison.OrdinalIgnoreCase) ||
-                                model.Contains("Corsair MP", StringComparison.OrdinalIgnoreCase) ||
-                                model.Contains("Kingston NV", StringComparison.OrdinalIgnoreCase) ||
-                                model.Contains("Crucial P", StringComparison.OrdinalIgnoreCase))
+                                model.Contains("CT", StringComparison.Ordinal) && model.Contains("SSD", StringComparison.Ordinal) &&
+                                (model.Contains("T", StringComparison.Ordinal) || model.Length < 20)) // Crucial T-series NVMe
                             {
-                                storageInfo.Type = "NVMe";
-                                _logger.LogInformation("Detected NVMe drive via model name: {Model}", model);
+                                driveType = "NVMe";
+                                priority = 95;
+
+                                // Boost priority for known fast drives
+                                if (model.Contains("T705", StringComparison.OrdinalIgnoreCase) ||
+                                    model.Contains("T700", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    priority = 110; // PCIe Gen 5 drives
+                                }
                             }
                             else
                             {
-                                storageInfo.Type = "SSD";
+                                driveType = "SSD";
+                                priority = 50;
                             }
-                            detectedType = true;
                         }
                         else if (mediaType == 3)
                         {
-                            storageInfo.Type = "HDD";
-                            detectedType = true;
+                            driveType = "HDD";
+                            priority = 10;
+                        }
+
+                        drives.Add((driveType, priority, model));
+                        driveCount++;
+                    }
+
+                    // Pick the fastest drive (highest priority)
+                    if (drives.Count > 0)
+                    {
+                        var fastestDrive = drives.OrderByDescending(d => d.Priority).First();
+                        fastestDriveType = fastestDrive.Type;
+                        detectedType = true;
+
+                        _logger.LogInformation("Picked fastest drive: {Type} - {Model} (from {Count} drives)",
+                            fastestDrive.Type, fastestDrive.Model, drives.Count);
+
+                        storageInfo.Type = fastestDriveType;
+                        if (drives.Count > 1)
+                        {
+                            storageInfo.Type += $" (fastest of {drives.Count})";
                         }
                     }
                 }
@@ -748,22 +785,7 @@ public class HardwareDetectionService : IHardwareDetectionService
                     }
                 }
 
-                // Count total drives
-                try
-                {
-                    using var allDrivesSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-                    using var allDrivesCollection = allDrivesSearcher.Get();
-                    int driveCount = allDrivesCollection.Count;
-
-                    if (driveCount > 1)
-                    {
-                        storageInfo.Type += $" ({driveCount} drives)";
-                    }
-                }
-                catch
-                {
-                    // Drive count is optional
-                }
+                // Drive count already handled above in MSFT_PhysicalDisk detection
             });
 
             _logger.LogInformation("Storage detected: {Type}, {Total}GB total, {Available}GB available",
