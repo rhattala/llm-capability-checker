@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/yourusername/llm-capability-checker/discussions
+    about: Ask questions, share ideas, and discuss with the community
+  - name: 📖 User Guide
+    url: https://github.com/yourusername/llm-capability-checker/blob/master/docs/USER_GUIDE.md
+    about: Comprehensive guide to using LLM Capability Checker
+  - name: ❓ FAQ
+    url: https://github.com/yourusername/llm-capability-checker/blob/master/docs/FAQ.md
+    about: Frequently asked questions and troubleshooting
+  - name: 🤝 Contributing Guide
+    url: https://github.com/yourusername/llm-capability-checker/blob/master/CONTRIBUTING.md
+    about: Learn how to contribute to the project
+  - name: 🌐 r/LocalLLaMA Community
+    url: https://reddit.com/r/LocalLLaMA
+    about: Discuss local LLMs with the broader community

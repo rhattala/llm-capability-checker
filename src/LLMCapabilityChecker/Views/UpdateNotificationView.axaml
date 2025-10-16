@@ -1,0 +1,225 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="LLMCapabilityChecker.Views.UpdateNotificationView"
+             x:DataType="vm:UpdateNotificationViewModel"
+             IsVisible="{Binding IsVisible}">
+
+    <Design.DataContext>
+        <vm:UpdateNotificationViewModel/>
+    </Design.DataContext>
+
+    <!-- Modal Overlay -->
+    <Border Background="#80000000" IsVisible="{Binding IsVisible}">
+        <Border Background="#F5F5F5"
+                CornerRadius="8"
+                MaxWidth="500"
+                MaxHeight="600"
+                Padding="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                BoxShadow="0 8 32 #40000000">
+
+            <StackPanel>
+                <!-- Header -->
+                <Border Background="#1976D2"
+                        CornerRadius="8,8,0,0"
+                        Padding="24,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="Update Available"
+                                       FontSize="24"
+                                       FontWeight="SemiBold"
+                                       Foreground="White"/>
+                            <TextBlock FontSize="14" Foreground="#E3F2FD">
+                                <Run Text="Version "/>
+                                <Run Text="{Binding UpdateInfo.LatestVersion}" FontWeight="Bold"/>
+                                <Run Text=" is now available"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Command="{Binding CloseCommand}"
+                                Background="Transparent"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="8"
+                                Cursor="Hand"
+                                VerticalAlignment="Top">
+                            <TextBlock Text="✕" FontSize="18" FontWeight="Bold"/>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Content -->
+                <ScrollViewer MaxHeight="350" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="24" Spacing="16">
+
+                        <!-- Current vs Latest Version -->
+                        <Border Background="#E3F2FD"
+                                CornerRadius="8"
+                                Padding="16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="Current Version"
+                                               FontSize="12"
+                                               Foreground="#666666"/>
+                                    <TextBlock Text="{Binding UpdateInfo.CurrentVersion}"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="#212121"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="→"
+                                           FontSize="24"
+                                           Foreground="#1976D2"
+                                           Margin="16,0"
+                                           VerticalAlignment="Center"/>
+
+                                <StackPanel Grid.Column="2" Spacing="4">
+                                    <TextBlock Text="Latest Version"
+                                               FontSize="12"
+                                               Foreground="#666666"/>
+                                    <TextBlock Text="{Binding UpdateInfo.LatestVersion}"
+                                               FontSize="18"
+                                               FontWeight="Bold"
+                                               Foreground="#4CAF50"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Release Date -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Release Date"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="#666666"/>
+                            <TextBlock Text="{Binding UpdateInfo.ReleaseDate, StringFormat='{}{0:MMMM dd, yyyy}'}"
+                                       FontSize="14"
+                                       Foreground="#424242"/>
+                        </StackPanel>
+
+                        <!-- Release Notes -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="What's New"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Foreground="#212121"/>
+
+                            <Border Background="White"
+                                    BorderBrush="#E0E0E0"
+                                    BorderThickness="1"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <ScrollViewer MaxHeight="150" VerticalScrollBarVisibility="Auto">
+                                    <TextBlock Text="{Binding UpdateInfo.ReleaseNotes}"
+                                               FontSize="14"
+                                               Foreground="#424242"
+                                               TextWrapping="Wrap"
+                                               LineHeight="20"/>
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Action Buttons -->
+                <Border BorderBrush="#E0E0E0"
+                        BorderThickness="0,1,0,0"
+                        Background="White"
+                        Padding="24,16">
+                    <StackPanel Spacing="12">
+
+                        <!-- Download Button -->
+                        <Button Command="{Binding DownloadUpdateCommand}"
+                                Background="#4CAF50"
+                                Foreground="White"
+                                Padding="16,12"
+                                CornerRadius="4"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Cursor="Hand">
+                            <Button.Styles>
+                                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#66BB6A"/>
+                                </Style>
+                                <Style Selector="Button:pressed /template/ ContentPresenter">
+                                    <Setter Property="Background" Value="#388E3C"/>
+                                </Style>
+                            </Button.Styles>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="⬇" FontSize="16" VerticalAlignment="Center"/>
+                                <TextBlock Text="Download Update" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Secondary Actions -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Command="{Binding RemindLaterCommand}"
+                                    Background="#E0E0E0"
+                                    Foreground="#424242"
+                                    Padding="12,8"
+                                    CornerRadius="4"
+                                    Margin="0,0,6,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Cursor="Hand">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="#BDBDBD"/>
+                                    </Style>
+                                </Button.Styles>
+                                <TextBlock Text="Remind Me Later" FontSize="14"/>
+                            </Button>
+
+                            <Button Grid.Column="1"
+                                    Command="{Binding SkipVersionCommand}"
+                                    Background="Transparent"
+                                    Foreground="#666666"
+                                    BorderBrush="#E0E0E0"
+                                    BorderThickness="1"
+                                    Padding="12,8"
+                                    CornerRadius="4"
+                                    Margin="6,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Cursor="Hand">
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                    </Style>
+                                </Button.Styles>
+                                <TextBlock Text="Skip This Version" FontSize="14"/>
+                            </Button>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </Border>
+    </Border>
+
+</UserControl>

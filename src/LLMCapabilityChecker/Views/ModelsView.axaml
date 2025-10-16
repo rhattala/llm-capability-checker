@@ -1,0 +1,284 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="LLMCapabilityChecker.Views.ModelsView"
+             x:DataType="vm:ModelsViewModel">
+
+  <Design.DataContext>
+    <vm:ModelsViewModel/>
+  </Design.DataContext>
+
+  <Grid>
+    <!-- Loading Overlay -->
+    <Border IsVisible="{Binding IsLoading}"
+            Background="#CC000000"
+            ZIndex="100">
+      <StackPanel VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Spacing="16">
+        <TextBlock Text="Loading Models..."
+                   FontSize="20"
+                   Foreground="White"
+                   HorizontalAlignment="Center"/>
+        <ProgressBar IsIndeterminate="True"
+                     Width="300"
+                     Height="4"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Main Content -->
+    <ScrollViewer IsVisible="{Binding !IsLoading}">
+      <StackPanel Margin="32" Spacing="24">
+
+        <!-- Header -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="Model Browser"
+                     FontSize="24"
+                     FontWeight="SemiBold"
+                     Foreground="White"/>
+          <TextBlock Text="{Binding FilteredModelCount, StringFormat='Showing {0} of'}"
+                     FontSize="14"
+                     Foreground="#666666">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="Showing {0} of {1} models">
+                <Binding Path="FilteredModelCount"/>
+                <Binding Path="TotalModelCount"/>
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
+        </StackPanel>
+
+        <!-- Filter Section -->
+        <Border Background="#F5F5F5"
+                CornerRadius="8"
+                Padding="20">
+          <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" RowSpacing="16" ColumnSpacing="16">
+
+            <!-- Search Box -->
+            <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Spacing="8">
+              <TextBlock Text="Search Models"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="#666666"/>
+              <TextBox Text="{Binding SearchText}"
+                       Watermark="Search by name, family, or keywords..."
+                       FontSize="14"
+                       Padding="12,8"
+                       Background="White"
+                       BorderBrush="#CCCCCC"
+                       BorderThickness="1"
+                       CornerRadius="4"/>
+            </StackPanel>
+
+            <!-- Size Filter -->
+            <StackPanel Grid.Column="0" Grid.Row="1" Spacing="8">
+              <TextBlock Text="Model Size"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="#666666"/>
+              <ComboBox ItemsSource="{Binding SizeFilterOptions}"
+                        SelectedItem="{Binding SelectedSizeFilter}"
+                        FontSize="14"
+                        Padding="12,8"
+                        Background="White"
+                        BorderBrush="#CCCCCC"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <!-- Use Case Filter -->
+            <StackPanel Grid.Column="1" Grid.Row="1" Spacing="8">
+              <TextBlock Text="Use Case"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="#666666"/>
+              <ComboBox ItemsSource="{Binding UseCaseFilterOptions}"
+                        SelectedItem="{Binding SelectedUseCaseFilter}"
+                        FontSize="14"
+                        Padding="12,8"
+                        Background="White"
+                        BorderBrush="#CCCCCC"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        HorizontalAlignment="Stretch"/>
+            </StackPanel>
+
+            <!-- Filter Summary -->
+            <StackPanel Grid.Column="2" Grid.Row="1" Spacing="8" VerticalAlignment="Bottom">
+              <TextBlock Text="Active Filters"
+                         FontSize="14"
+                         FontWeight="Bold"
+                         Foreground="#666666"/>
+              <Border Background="#E3F2FD"
+                      CornerRadius="4"
+                      Padding="12,8">
+                <TextBlock FontSize="14"
+                           Foreground="#1976D2"
+                           TextWrapping="Wrap">
+                  <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} results">
+                      <Binding Path="FilteredModelCount"/>
+                    </MultiBinding>
+                  </TextBlock.Text>
+                </TextBlock>
+              </Border>
+            </StackPanel>
+
+          </Grid>
+        </Border>
+
+        <!-- Models List Section -->
+        <StackPanel Spacing="16">
+          <TextBlock Text="Available Models"
+                     FontSize="24"
+                     FontWeight="SemiBold"
+                     Foreground="White"/>
+
+          <!-- Models DataGrid Alternative: ItemsControl with Cards -->
+          <ItemsControl ItemsSource="{Binding FilteredModels}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="#F5F5F5"
+                        CornerRadius="8"
+                        Padding="20"
+                        Margin="0,0,0,12">
+                  <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
+
+                    <!-- Model Info -->
+                    <StackPanel Grid.Column="0" Spacing="8">
+                      <TextBlock Text="{Binding Name}"
+                                 FontSize="18"
+                                 FontWeight="SemiBold"
+                                 Foreground="#212121"/>
+                      <TextBlock Text="{Binding Description}"
+                                 FontSize="14"
+                                 Foreground="#555555"
+                                 TextWrapping="Wrap"
+                                 MaxWidth="500"/>
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Background="#1976D2"
+                                CornerRadius="4"
+                                Padding="8,4">
+                          <TextBlock Text="{Binding Family}"
+                                     Foreground="White"
+                                     FontSize="12"
+                                     FontWeight="SemiBold"/>
+                        </Border>
+                        <Border Background="#4CAF50"
+                                CornerRadius="4"
+                                Padding="8,4">
+                          <TextBlock Text="{Binding ParameterSize}"
+                                     Foreground="White"
+                                     FontSize="12"
+                                     FontWeight="SemiBold"/>
+                        </Border>
+                      </StackPanel>
+                    </StackPanel>
+
+                    <!-- VRAM Requirements -->
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Spacing="4"
+                                Margin="20,0,0,0"
+                                MinWidth="100">
+                      <TextBlock Text="Min VRAM"
+                                 FontSize="12"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"/>
+                      <TextBlock FontSize="18"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"
+                                 HorizontalAlignment="Center">
+                        <TextBlock.Text>
+                          <Binding Path="Requirements.MinVramGB" StringFormat="{}{0} GB"/>
+                        </TextBlock.Text>
+                      </TextBlock>
+                    </StackPanel>
+
+                    <!-- CPU Fallback RAM -->
+                    <StackPanel Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Spacing="4"
+                                Margin="20,0,0,0"
+                                MinWidth="100">
+                      <TextBlock Text="CPU RAM"
+                                 FontSize="12"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"/>
+                      <TextBlock FontSize="18"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"
+                                 HorizontalAlignment="Center">
+                        <TextBlock.Text>
+                          <Binding Path="Requirements.MinRamGB" StringFormat="{}{0} GB"/>
+                        </TextBlock.Text>
+                      </TextBlock>
+                    </StackPanel>
+
+                    <!-- Use Cases -->
+                    <StackPanel Grid.Column="3"
+                                VerticalAlignment="Center"
+                                Spacing="4"
+                                Margin="20,0,0,0"
+                                MinWidth="120">
+                      <TextBlock Text="Use Cases"
+                                 FontSize="12"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"/>
+                      <TextBlock FontSize="13"
+                                 Foreground="#424242"
+                                 HorizontalAlignment="Center"
+                                 TextWrapping="Wrap"
+                                 TextAlignment="Center">
+                        <TextBlock.Text>
+                          <Binding Path="Tags[0]"/>
+                        </TextBlock.Text>
+                      </TextBlock>
+                    </StackPanel>
+
+                    <!-- License -->
+                    <StackPanel Grid.Column="4"
+                                VerticalAlignment="Center"
+                                Spacing="4"
+                                Margin="20,0,0,0"
+                                MinWidth="100">
+                      <TextBlock Text="License"
+                                 FontSize="12"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"/>
+                      <TextBlock Text="{Binding License}"
+                                 FontSize="11"
+                                 Foreground="#424242"
+                                 HorizontalAlignment="Center"
+                                 TextWrapping="Wrap"
+                                 TextAlignment="Center"
+                                 MaxWidth="100"/>
+                    </StackPanel>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- No Models Message -->
+          <Border IsVisible="{Binding !FilteredModels.Count}"
+                  Background="#FFF3E0"
+                  CornerRadius="8"
+                  Padding="20">
+            <TextBlock Text="No models match your filter criteria. Try adjusting your filters."
+                       FontSize="14"
+                       Foreground="#F57C00"
+                       TextWrapping="Wrap"/>
+          </Border>
+
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

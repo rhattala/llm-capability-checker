@@ -1,0 +1,372 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-15T00:00:00Z",
+  "recommendations": [
+    {
+      "modelName": "DeepSeek-R1",
+      "family": "DeepSeek",
+      "parameterSize": "70B",
+      "recommendedByCount": 342,
+      "averageRating": 4.7,
+      "totalRatings": 127,
+      "compatibleHardwareTier": "High",
+      "minVramGB": 48,
+      "minRamGB": 80,
+      "reviews": [
+        {
+          "userId": "user_a1b2c3",
+          "rating": 5,
+          "comment": "Exceptional reasoning capabilities. Outperforms many commercial models on complex problems.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-10T14:30:00Z",
+          "useCase": "Reasoning",
+          "helpfulCount": 23
+        },
+        {
+          "userId": "user_d4e5f6",
+          "rating": 4,
+          "comment": "Great model but requires significant VRAM. Q4 quantization works well.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-08T09:15:00Z",
+          "useCase": "Chat",
+          "helpfulCount": 15
+        }
+      ],
+      "dateAdded": "2025-01-05T00:00:00Z",
+      "source": "Verified",
+      "description": "State-of-the-art reasoning model with exceptional performance on mathematical and logical tasks.",
+      "tags": ["Reasoning", "Math", "Code", "Open Source"],
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Qwen2.5-32B-Instruct",
+      "family": "Qwen",
+      "parameterSize": "32B",
+      "recommendedByCount": 289,
+      "averageRating": 4.6,
+      "totalRatings": 98,
+      "compatibleHardwareTier": "High",
+      "minVramGB": 24,
+      "minRamGB": 40,
+      "reviews": [
+        {
+          "userId": "user_g7h8i9",
+          "rating": 5,
+          "comment": "Best multilingual model I've tested. Chinese and English performance is outstanding.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-12T16:45:00Z",
+          "useCase": "Multilingual",
+          "helpfulCount": 31
+        }
+      ],
+      "dateAdded": "2024-12-20T00:00:00Z",
+      "source": "Verified",
+      "description": "Powerful multilingual instruction-following model with excellent coding and reasoning abilities.",
+      "tags": ["Multilingual", "Code", "Reasoning", "Chat"],
+      "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Gemma 2 27B",
+      "family": "Gemma",
+      "parameterSize": "27B",
+      "recommendedByCount": 256,
+      "averageRating": 4.5,
+      "totalRatings": 87,
+      "compatibleHardwareTier": "High",
+      "minVramGB": 20,
+      "minRamGB": 32,
+      "reviews": [
+        {
+          "userId": "user_j1k2l3",
+          "rating": 5,
+          "comment": "Excellent open model from Google. Very stable and reliable for production use.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-11T11:20:00Z",
+          "useCase": "Enterprise",
+          "helpfulCount": 19
+        }
+      ],
+      "dateAdded": "2024-12-15T00:00:00Z",
+      "source": "Official",
+      "description": "Google's powerful open model with strong performance across various tasks.",
+      "tags": ["Chat", "Code", "Enterprise", "Safe"],
+      "url": "https://huggingface.co/google/gemma-2-27b",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Phi-4",
+      "family": "Phi",
+      "parameterSize": "14B",
+      "recommendedByCount": 412,
+      "averageRating": 4.8,
+      "totalRatings": 156,
+      "compatibleHardwareTier": "Mid",
+      "minVramGB": 12,
+      "minRamGB": 20,
+      "reviews": [
+        {
+          "userId": "user_m4n5o6",
+          "rating": 5,
+          "comment": "Incredible performance for the size! Punches way above its weight class.",
+          "hardwareTier": "Mid",
+          "datePosted": "2025-01-13T08:30:00Z",
+          "useCase": "Chat",
+          "helpfulCount": 42
+        },
+        {
+          "userId": "user_p7q8r9",
+          "rating": 5,
+          "comment": "Microsoft knocked it out of the park. Great for coding and math.",
+          "hardwareTier": "Mid",
+          "datePosted": "2025-01-09T19:45:00Z",
+          "useCase": "Coding",
+          "helpfulCount": 38
+        }
+      ],
+      "dateAdded": "2024-12-10T00:00:00Z",
+      "source": "Official",
+      "description": "Microsoft's latest small language model with impressive capabilities for its size.",
+      "tags": ["Lightweight", "Code", "Math", "Reasoning"],
+      "url": "https://huggingface.co/microsoft/phi-4",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Command R+ 104B",
+      "family": "Command",
+      "parameterSize": "104B",
+      "recommendedByCount": 178,
+      "averageRating": 4.4,
+      "totalRatings": 52,
+      "compatibleHardwareTier": "Enthusiast",
+      "minVramGB": 80,
+      "minRamGB": 128,
+      "reviews": [
+        {
+          "userId": "user_s1t2u3",
+          "rating": 4,
+          "comment": "Enterprise-grade model with excellent RAG capabilities. Heavy on resources though.",
+          "hardwareTier": "Enthusiast",
+          "datePosted": "2025-01-07T15:30:00Z",
+          "useCase": "Enterprise",
+          "helpfulCount": 12
+        }
+      ],
+      "dateAdded": "2024-12-05T00:00:00Z",
+      "source": "Verified",
+      "description": "Cohere's flagship model optimized for enterprise RAG and retrieval applications.",
+      "tags": ["Enterprise", "RAG", "Chat", "Multilingual"],
+      "url": "https://huggingface.co/CohereForAI/c4ai-command-r-plus",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Llama 3.1 8B Instruct",
+      "family": "Llama",
+      "parameterSize": "8B",
+      "recommendedByCount": 534,
+      "averageRating": 4.6,
+      "totalRatings": 203,
+      "compatibleHardwareTier": "Mid",
+      "minVramGB": 6,
+      "minRamGB": 12,
+      "reviews": [
+        {
+          "userId": "user_v4w5x6",
+          "rating": 5,
+          "comment": "Best 8B model available. Runs great on my RTX 4060 Ti.",
+          "hardwareTier": "Mid",
+          "datePosted": "2025-01-14T10:15:00Z",
+          "useCase": "Chat",
+          "helpfulCount": 67
+        }
+      ],
+      "dateAdded": "2024-11-20T00:00:00Z",
+      "source": "Official",
+      "description": "Meta's versatile mid-size model with strong general capabilities.",
+      "tags": ["Chat", "Code", "Multilingual", "Popular"],
+      "url": "https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct",
+      "isInOfficialDatabase": true,
+      "officialModelId": "llama-3.1-8b"
+    },
+    {
+      "modelName": "Mistral Small 22B",
+      "family": "Mistral",
+      "parameterSize": "22B",
+      "recommendedByCount": 367,
+      "averageRating": 4.7,
+      "totalRatings": 134,
+      "compatibleHardwareTier": "Mid",
+      "minVramGB": 16,
+      "minRamGB": 28,
+      "reviews": [
+        {
+          "userId": "user_y7z8a9",
+          "rating": 5,
+          "comment": "Excellent balance of performance and resource usage. Highly recommended.",
+          "hardwareTier": "Mid",
+          "datePosted": "2025-01-06T13:45:00Z",
+          "useCase": "Chat",
+          "helpfulCount": 29
+        }
+      ],
+      "dateAdded": "2024-12-01T00:00:00Z",
+      "source": "Official",
+      "description": "Mistral's efficient mid-size model with strong performance across tasks.",
+      "tags": ["Chat", "Code", "Efficient", "Multilingual"],
+      "url": "https://huggingface.co/mistralai/Mistral-Small-Instruct-2409",
+      "isInOfficialDatabase": true,
+      "officialModelId": "mistral-small-22b"
+    },
+    {
+      "modelName": "Llama 3.2 3B Instruct",
+      "family": "Llama",
+      "parameterSize": "3B",
+      "recommendedByCount": 298,
+      "averageRating": 4.4,
+      "totalRatings": 112,
+      "compatibleHardwareTier": "Entry",
+      "minVramGB": 4,
+      "minRamGB": 6,
+      "reviews": [
+        {
+          "userId": "user_b1c2d3",
+          "rating": 4,
+          "comment": "Great for laptops and lower-end hardware. Surprisingly capable for 3B.",
+          "hardwareTier": "Entry",
+          "datePosted": "2025-01-12T12:00:00Z",
+          "useCase": "Lightweight",
+          "helpfulCount": 34
+        }
+      ],
+      "dateAdded": "2024-11-25T00:00:00Z",
+      "source": "Official",
+      "description": "Compact Llama model perfect for edge deployment and resource-constrained environments.",
+      "tags": ["Lightweight", "Chat", "Mobile", "Edge"],
+      "url": "https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct",
+      "isInOfficialDatabase": true,
+      "officialModelId": "llama-3.2-3b"
+    },
+    {
+      "modelName": "Yi-1.5-34B",
+      "family": "Yi",
+      "parameterSize": "34B",
+      "recommendedByCount": 187,
+      "averageRating": 4.5,
+      "totalRatings": 68,
+      "compatibleHardwareTier": "High",
+      "minVramGB": 24,
+      "minRamGB": 40,
+      "reviews": [
+        {
+          "userId": "user_e4f5g6",
+          "rating": 5,
+          "comment": "Underrated model with excellent multilingual support, especially for Asian languages.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-04T09:30:00Z",
+          "useCase": "Multilingual",
+          "helpfulCount": 18
+        }
+      ],
+      "dateAdded": "2024-11-10T00:00:00Z",
+      "source": "Community",
+      "description": "Powerful multilingual model with strong performance on Chinese and English tasks.",
+      "tags": ["Multilingual", "Chat", "Code", "Asian Languages"],
+      "url": "https://huggingface.co/01-ai/Yi-1.5-34B",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Nous Hermes 2 Pro",
+      "family": "Hermes",
+      "parameterSize": "8B",
+      "recommendedByCount": 224,
+      "averageRating": 4.6,
+      "totalRatings": 89,
+      "compatibleHardwareTier": "Mid",
+      "minVramGB": 6,
+      "minRamGB": 12,
+      "reviews": [
+        {
+          "userId": "user_h7i8j9",
+          "rating": 5,
+          "comment": "Fantastic for function calling and structured outputs. Works great with APIs.",
+          "hardwareTier": "Mid",
+          "datePosted": "2024-12-28T16:20:00Z",
+          "useCase": "Coding",
+          "helpfulCount": 27
+        }
+      ],
+      "dateAdded": "2024-10-15T00:00:00Z",
+      "source": "Community",
+      "description": "Fine-tuned model excelling at function calling and structured generation.",
+      "tags": ["Code", "Function Calling", "API", "Structured Output"],
+      "url": "https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    },
+    {
+      "modelName": "Mixtral 8x7B MoE",
+      "family": "Mixtral",
+      "parameterSize": "47B",
+      "recommendedByCount": 445,
+      "averageRating": 4.7,
+      "totalRatings": 178,
+      "compatibleHardwareTier": "High",
+      "minVramGB": 30,
+      "minRamGB": 50,
+      "reviews": [
+        {
+          "userId": "user_k1l2m3",
+          "rating": 5,
+          "comment": "MoE architecture is brilliant. Gets 47B parameter performance with 13B active params.",
+          "hardwareTier": "High",
+          "datePosted": "2025-01-05T14:10:00Z",
+          "useCase": "Chat",
+          "helpfulCount": 52
+        }
+      ],
+      "dateAdded": "2024-09-20T00:00:00Z",
+      "source": "Official",
+      "description": "Mixture of Experts model delivering exceptional performance with efficient inference.",
+      "tags": ["Chat", "Code", "MoE", "Efficient"],
+      "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
+      "isInOfficialDatabase": true,
+      "officialModelId": "mixtral-8x7b"
+    },
+    {
+      "modelName": "StarCoder2-15B",
+      "family": "StarCoder",
+      "parameterSize": "15B",
+      "recommendedByCount": 312,
+      "averageRating": 4.5,
+      "totalRatings": 124,
+      "compatibleHardwareTier": "Mid",
+      "minVramGB": 12,
+      "minRamGB": 20,
+      "reviews": [
+        {
+          "userId": "user_n4o5p6",
+          "rating": 5,
+          "comment": "Best open-source coding model. Trained on 600+ languages!",
+          "hardwareTier": "Mid",
+          "datePosted": "2025-01-03T11:30:00Z",
+          "useCase": "Coding",
+          "helpfulCount": 41
+        }
+      ],
+      "dateAdded": "2024-10-01T00:00:00Z",
+      "source": "Verified",
+      "description": "State-of-the-art code generation model trained on diverse programming languages.",
+      "tags": ["Coding", "Code Completion", "Multi-language", "Open Source"],
+      "url": "https://huggingface.co/bigcode/starcoder2-15b",
+      "isInOfficialDatabase": false,
+      "officialModelId": null
+    }
+  ]
+}

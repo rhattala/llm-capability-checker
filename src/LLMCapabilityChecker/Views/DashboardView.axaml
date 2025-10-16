@@ -1,0 +1,1265 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="LLMCapabilityChecker.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+  <Design.DataContext>
+    <vm:DashboardViewModel/>
+  </Design.DataContext>
+
+  <Grid>
+    <!-- Loading Overlay -->
+    <Border IsVisible="{Binding IsLoading}"
+            Background="#CC000000"
+            ZIndex="100">
+      <StackPanel VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Spacing="16">
+        <TextBlock Text="{Binding LoadingMessage}"
+                   FontSize="20"
+                   Foreground="White"
+                   HorizontalAlignment="Center"/>
+        <ProgressBar IsIndeterminate="True"
+                     Width="300"
+                     Height="4"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Error Display -->
+    <Border IsVisible="{Binding HasError}"
+            Background="#FFEBEE"
+            Padding="20"
+            CornerRadius="8"
+            Margin="20"
+            VerticalAlignment="Top"
+            ZIndex="90">
+      <StackPanel Spacing="12">
+        <TextBlock Text="Error Loading Dashboard"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Foreground="#C62828"/>
+        <TextBlock Text="{Binding ErrorMessage}"
+                   Foreground="#C62828"
+                   TextWrapping="Wrap"/>
+        <Button Content="Retry"
+                Command="{Binding RefreshCommand}"
+                HorizontalAlignment="Left"
+                Padding="16,8"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Main Content -->
+    <ScrollViewer IsVisible="{Binding !IsLoading}">
+      <StackPanel Margin="32" Spacing="24">
+
+        <!-- Header -->
+        <StackPanel Spacing="8">
+          <TextBlock Text="LLM Capability Checker"
+                     FontSize="32"
+                     FontWeight="Bold"/>
+          <TextBlock Text="System Analysis Dashboard"
+                     FontSize="16"
+                     Foreground="#666666"/>
+        </StackPanel>
+
+        <!-- Three Score Cards -->
+        <StackPanel Spacing="16">
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+
+            <!-- Inference Score Card -->
+            <Border Grid.Column="0" Background="#E3F2FD" CornerRadius="12" Padding="24">
+              <StackPanel Spacing="12" HorizontalAlignment="Center">
+                <TextBlock Text="Inference" FontSize="20" FontWeight="SemiBold"
+                           Foreground="#1976D2" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.InferenceScore}" FontSize="56"
+                           FontWeight="Bold" Foreground="#1976D2" HorizontalAlignment="Center"
+                           ToolTip.Tip="Score for running models (chat, generation)"/>
+                <TextBlock Text="/ 100" FontSize="18" Foreground="#1976D2"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.InferenceCapability}" FontSize="14"
+                           Foreground="#424242" TextAlignment="Center" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+            <!-- Training Score Card -->
+            <Border Grid.Column="1" Background="#FFF3E0" CornerRadius="12" Padding="24">
+              <StackPanel Spacing="12" HorizontalAlignment="Center">
+                <TextBlock Text="Training" FontSize="20" FontWeight="SemiBold"
+                           Foreground="#F57C00" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.TrainingScore}" FontSize="56"
+                           FontWeight="Bold" Foreground="#F57C00" HorizontalAlignment="Center"
+                           ToolTip.Tip="Score for full fine-tuning (high VRAM required)"/>
+                <TextBlock Text="/ 100" FontSize="18" Foreground="#F57C00"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.TrainingCapability}" FontSize="14"
+                           Foreground="#424242" TextAlignment="Center" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+            <!-- Fine-Tuning Score Card -->
+            <Border Grid.Column="2" Background="#E8F5E9" CornerRadius="12" Padding="24">
+              <StackPanel Spacing="12" HorizontalAlignment="Center">
+                <TextBlock Text="Fine-Tuning" FontSize="20" FontWeight="SemiBold"
+                           Foreground="#388E3C" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.FineTuningScore}" FontSize="56"
+                           FontWeight="Bold" Foreground="#388E3C" HorizontalAlignment="Center"
+                           ToolTip.Tip="Score for LoRA/QLoRA parameter-efficient tuning"/>
+                <TextBlock Text="/ 100" FontSize="18" Foreground="#388E3C"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SystemScores.FineTuningCapability}" FontSize="14"
+                           Foreground="#424242" TextAlignment="Center" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <!-- System Info Below Scores -->
+          <Grid ColumnDefinitions="Auto,*,Auto">
+            <TextBlock Grid.Column="0" Text="{Binding SystemTierBadge}" FontSize="16"
+                       FontWeight="SemiBold" Foreground="#1976D2"/>
+            <TextBlock Grid.Column="1" Text="{Binding PrimaryBottleneck}" FontSize="14"
+                       Foreground="#666666" Margin="16,0" TextAlignment="Center"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+              <Button Content="Refresh" Command="{Binding RefreshCommand}"
+                      Background="#1976D2" Foreground="White" Padding="16,8" CornerRadius="4"
+                      Cursor="Hand" ToolTip.Tip="Re-scan hardware and recalculate scores">
+                <Button.Styles>
+                  <Style Selector="Button:pointerover /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#42A5F5"/>
+                  </Style>
+                  <Style Selector="Button:pressed /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#0D47A1"/>
+                  </Style>
+                </Button.Styles>
+              </Button>
+              <Button Content="Export Report" Command="{Binding ExportReportCommand}"
+                      Background="#1976D2" Foreground="White" Padding="16,8" CornerRadius="4"
+                      Cursor="Hand" ToolTip.Tip="Save analysis to JSON file">
+                <Button.Styles>
+                  <Style Selector="Button:pointerover /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#42A5F5"/>
+                  </Style>
+                  <Style Selector="Button:pressed /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#0D47A1"/>
+                  </Style>
+                </Button.Styles>
+              </Button>
+              <Button Content="Run Benchmark" Command="{Binding RunBenchmarkCommand}"
+                      Background="#4CAF50" Foreground="White" Padding="16,8" CornerRadius="4"
+                      Cursor="Hand" IsEnabled="{Binding !IsBenchmarkRunning}"
+                      ToolTip.Tip="Test actual performance (30-60 seconds)">
+                <Button.Styles>
+                  <Style Selector="Button:pointerover /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#66BB6A"/>
+                  </Style>
+                  <Style Selector="Button:pressed /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#2E7D32"/>
+                  </Style>
+                </Button.Styles>
+              </Button>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+
+        <!-- Benchmark Running Overlay -->
+        <Border IsVisible="{Binding IsBenchmarkRunning}"
+                Background="#CC000000"
+                ZIndex="95"
+                CornerRadius="12"
+                Margin="32,16">
+          <StackPanel VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Spacing="16">
+            <TextBlock Text="Running Performance Benchmark..."
+                       FontSize="20"
+                       Foreground="White"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="This may take 30-60 seconds"
+                       FontSize="14"
+                       Foreground="#BBDEFB"
+                       HorizontalAlignment="Center"/>
+            <ProgressBar IsIndeterminate="True"
+                         Width="300"
+                         Height="4"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Benchmark Results Modal -->
+        <Border IsVisible="{Binding ShowBenchmarkResults}"
+                Background="#CC000000"
+                ZIndex="95">
+          <Border Background="White"
+                  CornerRadius="12"
+                  MaxWidth="700"
+                  Margin="40"
+                  Padding="32">
+            <StackPanel Spacing="24">
+              <!-- Header -->
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Benchmark Results"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#212121"/>
+                <Button Grid.Column="1"
+                        Content="Close"
+                        Command="{Binding CloseBenchmarkResultsCommand}"
+                        Background="#E0E0E0"
+                        Foreground="#212121"
+                        Padding="16,8"
+                        CornerRadius="4"
+                        Cursor="Hand"/>
+              </Grid>
+
+              <!-- Reference System Info Card -->
+              <Border Background="#F5F5F5" CornerRadius="8" Padding="20" Margin="0,0,0,16">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Reference System (Baseline)" FontSize="18"
+                             FontWeight="SemiBold" Foreground="#1976D2"/>
+                  <TextBlock Text="All scores are compared against this mid-tier system:"
+                             FontSize="13" Foreground="#666666" TextWrapping="Wrap"/>
+
+                  <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                        RowSpacing="6" ColumnSpacing="12" Margin="0,12,0,0">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="CPU:" FontWeight="SemiBold"
+                               Foreground="#424242"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="AMD Ryzen 5 5600X (6-core, 3.7GHz)"
+                               Foreground="#666666"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="GPU:" FontWeight="SemiBold"
+                               Foreground="#424242"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="NVIDIA RTX 3060 12GB (Ampere, CUDA 12.1)"
+                               Foreground="#666666"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="RAM:" FontWeight="SemiBold"
+                               Foreground="#424242"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="32GB DDR4-3200"
+                               Foreground="#666666"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Storage:" FontWeight="SemiBold"
+                               Foreground="#424242"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="1TB NVMe Gen3 (Samsung 970 EVO)"
+                               Foreground="#666666"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Updated:" FontWeight="SemiBold"
+                               Foreground="#424242"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="January 2025"
+                               Foreground="#666666"/>
+                  </Grid>
+
+                  <TextBlock Text="Your comparison percentage shows how much faster/slower your system is vs. this baseline."
+                             FontSize="12" Foreground="#1976D2" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                </StackPanel>
+              </Border>
+
+              <!-- Comparison Score -->
+              <Border Background="#E3F2FD"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="System Performance Rating"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             Foreground="#1976D2"
+                             HorizontalAlignment="Center"/>
+                  <TextBlock Text="{Binding BenchmarkResults.ComparisonToReference, StringFormat='{}{0:F1}%'}"
+                             FontSize="48"
+                             FontWeight="Bold"
+                             Foreground="#1976D2"
+                             HorizontalAlignment="Center"/>
+                  <TextBlock Text="vs. Reference System"
+                             FontSize="14"
+                             Foreground="#424242"
+                             HorizontalAlignment="Center"/>
+                </StackPanel>
+              </Border>
+
+              <!-- CPU Scores -->
+              <StackPanel Spacing="12">
+                <TextBlock Text="CPU Performance"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                  <Border Grid.Column="0"
+                          Background="#F5F5F5"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Single-Core"
+                                 FontSize="14"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding BenchmarkResults.CpuSingleCoreScore, StringFormat='{}{0:F0}'}"
+                                 FontSize="24"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+
+                  <Border Grid.Column="1"
+                          Background="#F5F5F5"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Multi-Core"
+                                 FontSize="14"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding BenchmarkResults.CpuMultiCoreScore, StringFormat='{}{0:F0}'}"
+                                 FontSize="24"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </StackPanel>
+
+              <!-- Memory Bandwidth -->
+              <StackPanel Spacing="12">
+                <TextBlock Text="Memory Performance"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <Border Background="#F5F5F5"
+                        CornerRadius="8"
+                        Padding="16">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Memory Bandwidth"
+                               FontSize="14"
+                               Foreground="#666666"/>
+                    <TextBlock Text="{Binding BenchmarkResults.MemoryBandwidthGBps, StringFormat='{}{0:F2} GB/s'}"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="#212121"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+
+              <!-- Token Throughput Estimates -->
+              <StackPanel Spacing="12">
+                <TextBlock Text="Estimated Tokens/Second"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+                <TextBlock Text="Approximate inference speed for different model sizes"
+                           FontSize="13"
+                           Foreground="#666666"/>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                  <!-- 7B Model -->
+                  <Border Grid.Column="0" Grid.Row="0"
+                          Background="#E8F5E9"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="7B Model"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 Foreground="#2E7D32"/>
+                      <TextBlock Text="{Binding BenchmarkResults.TokenThroughput.Model7B, StringFormat='{}{0:F1} tokens/sec'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- 13B Model -->
+                  <Border Grid.Column="1" Grid.Row="0"
+                          Background="#E8F5E9"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="13B Model"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 Foreground="#2E7D32"/>
+                      <TextBlock Text="{Binding BenchmarkResults.TokenThroughput.Model13B, StringFormat='{}{0:F1} tokens/sec'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- 34B Model -->
+                  <Border Grid.Column="0" Grid.Row="1"
+                          Background="#FFF3E0"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="34B Model"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 Foreground="#F57C00"/>
+                      <TextBlock Text="{Binding BenchmarkResults.TokenThroughput.Model34B, StringFormat='{}{0:F1} tokens/sec'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- 70B Model -->
+                  <Border Grid.Column="1" Grid.Row="1"
+                          Background="#FFEBEE"
+                          CornerRadius="8"
+                          Padding="16">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="70B Model"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 Foreground="#C62828"/>
+                      <TextBlock Text="{Binding BenchmarkResults.TokenThroughput.Model70B, StringFormat='{}{0:F1} tokens/sec'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#212121"/>
+                    </StackPanel>
+                  </Border>
+                </Grid>
+              </StackPanel>
+
+              <!-- Benchmark Info -->
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="16">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{Binding BenchmarkResults.BenchmarkTimestamp, StringFormat='Benchmark run: {0:yyyy-MM-dd HH:mm:ss}'}"
+                             FontSize="12"
+                             Foreground="#666666"/>
+                  <TextBlock Text="{Binding BenchmarkResults.BenchmarkDurationSeconds, StringFormat='Duration: {0:F2} seconds'}"
+                             FontSize="12"
+                             Foreground="#666666"/>
+                  <TextBlock Text="Note: These are estimates based on system benchmarks. Actual performance may vary."
+                             FontSize="11"
+                             Foreground="#999999"
+                             TextWrapping="Wrap"
+                             Margin="0,8,0,0"/>
+                </StackPanel>
+              </Border>
+
+              <!-- Benchmark Accuracy Info -->
+              <Border Background="#E3F2FD" CornerRadius="8" Padding="16" Margin="0,16,0,0">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="How accurate are these benchmarks?" FontSize="14"
+                             FontWeight="SemiBold" Foreground="#1976D2"/>
+                  <TextBlock FontSize="13" Foreground="#424242" TextWrapping="Wrap">
+                    <Run Text="These are"/>
+                    <Run Text=" real synthetic benchmarks " FontWeight="Bold"/>
+                    <Run Text="that measure your CPU, memory, and disk performance. Token throughput estimates are based on your hardware specs and validated against real-world llama.cpp benchmarks."/>
+                  </TextBlock>
+                  <TextBlock Text="• CPU tests: Matrix multiplication (single + multi-core)"
+                             FontSize="12" Foreground="#666666"/>
+                  <TextBlock Text="• Memory tests: Sequential read/write bandwidth"
+                             FontSize="12" Foreground="#666666"/>
+                  <TextBlock Text="• Token/sec: Extrapolated from hardware capabilities"
+                             FontSize="12" Foreground="#666666"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Border>
+        </Border>
+
+        <!-- Hardware Info Section -->
+        <StackPanel Spacing="16">
+          <TextBlock Text="Hardware Information"
+                     FontSize="24"
+                     FontWeight="SemiBold"
+                     Foreground="White"/>
+
+          <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+
+            <!-- CPU Card -->
+            <Border Grid.Column="0" Grid.Row="0"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,0,8,8"
+                    ToolTip.Tip="Your processor - affects model loading speed and CPU inference">
+              <StackPanel Spacing="8">
+                <TextBlock Text="CPU"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#666666"/>
+                <TextBlock Text="{Binding CpuDisplay}"
+                           FontSize="16"
+                           Foreground="#212121"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+            <!-- GPU Card -->
+            <Border Grid.Column="1" Grid.Row="0"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="8,0,0,8"
+                    ToolTip.Tip="Your graphics card - VRAM determines model size, compute power determines speed">
+              <StackPanel Spacing="8">
+                <TextBlock Text="GPU"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#666666"/>
+                <TextBlock Text="{Binding GpuDisplay}"
+                           FontSize="16"
+                           Foreground="#212121"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+            <!-- RAM Card -->
+            <Border Grid.Column="0" Grid.Row="1"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,8,8,0"
+                    ToolTip.Tip="System memory - determines maximum model size you can load">
+              <StackPanel Spacing="8">
+                <TextBlock Text="RAM"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#666666"/>
+                <TextBlock Text="{Binding RamDisplay}"
+                           FontSize="16"
+                           Foreground="#212121"/>
+              </StackPanel>
+            </Border>
+
+            <!-- Storage Card -->
+            <Border Grid.Column="1" Grid.Row="1"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="8,8,0,0"
+                    ToolTip.Tip="Drive storage - affects model loading time and how many models you can store">
+              <StackPanel Spacing="8">
+                <TextBlock Text="STORAGE"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#666666"/>
+                <TextBlock Text="{Binding StorageDisplay}"
+                           FontSize="16"
+                           Foreground="#212121"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+
+        <!-- Component Scores Section -->
+        <StackPanel Spacing="16">
+          <TextBlock Text="Component Scores"
+                     FontSize="24"
+                     FontWeight="SemiBold"
+                     Foreground="White"/>
+
+          <Grid ColumnDefinitions="*,*,*,*,*">
+            <!-- CPU Score -->
+            <Button Grid.Column="0"
+                    Command="{Binding NavigateToComponentDetailsCommand}"
+                    CommandParameter="CPU"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Margin="0,0,6,0"
+                    HorizontalContentAlignment="Stretch"
+                    Cursor="Hand"
+                    ToolTip.Tip="CPU score based on cores, clock speed, and generation. Click for details.">
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="CPU"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SystemScores.Breakdown.CpuScore, StringFormat='{}{0}/100'}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#424242"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="2"
+                               Text="→"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#1976D2"/>
+                  </Grid>
+                  <TextBlock Text="{Binding CpuDisplay}"
+                             FontSize="14"
+                             Foreground="#666666"/>
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.CpuScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="#4CAF50"/>
+                </StackPanel>
+              </Border>
+              <Button.Styles>
+                <Style Selector="Button:pointerover > Border">
+                  <Setter Property="Background" Value="#E3F2FD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <!-- Memory Score -->
+            <Button Grid.Column="1"
+                    Command="{Binding NavigateToComponentDetailsCommand}"
+                    CommandParameter="RAM"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Margin="6,0,6,0"
+                    HorizontalContentAlignment="Stretch"
+                    Cursor="Hand"
+                    ToolTip.Tip="Memory score based on total RAM capacity. More RAM = larger models. Click for details.">
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Memory"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SystemScores.Breakdown.MemoryScore, StringFormat='{}{0}/100'}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#424242"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="2"
+                               Text="→"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#1976D2"/>
+                  </Grid>
+                  <TextBlock Text="{Binding RamDisplay}"
+                             FontSize="14"
+                             Foreground="#666666"/>
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.MemoryScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="#4CAF50"/>
+                </StackPanel>
+              </Border>
+              <Button.Styles>
+                <Style Selector="Button:pointerover > Border">
+                  <Setter Property="Background" Value="#E3F2FD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <!-- GPU Score -->
+            <Button Grid.Column="2"
+                    Command="{Binding NavigateToComponentDetailsCommand}"
+                    CommandParameter="GPU"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Margin="6,0,6,0"
+                    HorizontalContentAlignment="Stretch"
+                    Cursor="Hand"
+                    ToolTip.Tip="GPU score based on VRAM and compute capability. Higher VRAM = larger models, more compute = faster inference. Click for details.">
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="GPU"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SystemScores.Breakdown.GpuScore, StringFormat='{}{0}/100'}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#424242"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="2"
+                               Text="→"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#1976D2"/>
+                  </Grid>
+                  <TextBlock Text="{Binding GpuDisplay}"
+                             FontSize="14"
+                             Foreground="#666666"/>
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.GpuScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="#4CAF50"/>
+                </StackPanel>
+              </Border>
+              <Button.Styles>
+                <Style Selector="Button:pointerover > Border">
+                  <Setter Property="Background" Value="#E3F2FD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <!-- Storage Score -->
+            <Button Grid.Column="3"
+                    Command="{Binding NavigateToComponentDetailsCommand}"
+                    CommandParameter="Storage"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Margin="6,0,6,0"
+                    HorizontalContentAlignment="Stretch"
+                    Cursor="Hand"
+                    ToolTip.Tip="Storage score based on drive type and available space. NVMe SSD > SATA SSD > HDD. Click for details.">
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Storage"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SystemScores.Breakdown.StorageScore, StringFormat='{}{0}/100'}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#424242"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="2"
+                               Text="→"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#1976D2"/>
+                  </Grid>
+                  <TextBlock Text="{Binding StorageDisplay}"
+                             FontSize="14"
+                             Foreground="#666666"/>
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.StorageScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="#4CAF50"/>
+                </StackPanel>
+              </Border>
+              <Button.Styles>
+                <Style Selector="Button:pointerover > Border">
+                  <Setter Property="Background" Value="#E3F2FD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <!-- Framework Score -->
+            <Button Grid.Column="4"
+                    Command="{Binding NavigateToComponentDetailsCommand}"
+                    CommandParameter="Frameworks"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Margin="6,0,0,0"
+                    HorizontalContentAlignment="Stretch"
+                    Cursor="Hand"
+                    ToolTip.Tip="Framework score based on detected ML frameworks (CUDA, DirectML, ROCm, Metal). Frameworks enable GPU acceleration. Click for details.">
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="20">
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="Frameworks"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SystemScores.Breakdown.FrameworkScore, StringFormat='{}{0}/100'}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#424242"
+                               Margin="0,0,12,0"/>
+                    <TextBlock Grid.Column="2"
+                               Text="→"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#1976D2"/>
+                  </Grid>
+                  <TextBlock Text="{Binding FrameworksDisplay}"
+                             FontSize="14"
+                             Foreground="#666666"/>
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.FrameworkScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="#4CAF50"/>
+                </StackPanel>
+              </Border>
+              <Button.Styles>
+                <Style Selector="Button:pointerover > Border">
+                  <Setter Property="Background" Value="#E3F2FD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+          </Grid>
+        </StackPanel>
+
+        <!-- Quick Upgrade Suggestions -->
+        <StackPanel Spacing="16">
+          <TextBlock Text="Upgrade Suggestions"
+                     FontSize="24"
+                     FontWeight="SemiBold"
+                     Foreground="White"/>
+
+          <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto">
+
+            <!-- CPU Card -->
+            <Border Grid.Column="0" Grid.Row="0"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,0,6,6">
+              <StackPanel Spacing="12">
+                <TextBlock Text="CPU"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <StackPanel Spacing="4">
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.CpuScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="{Binding CpuScoreColor}"/>
+                  <TextBlock Text="{Binding SystemScores.Breakdown.CpuScore, StringFormat='Score: {0}/100'}"
+                             FontSize="13"
+                             Foreground="#666666"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding CpuDisplay}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+
+                <!-- Upgrade suggestion - only visible if score < 80 -->
+                <Border IsVisible="{Binding ShowCpuUpgrade}"
+                        Background="#FFF3E0"
+                        CornerRadius="4"
+                        Padding="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Suggested Upgrade:"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#F57C00"/>
+                    <TextBlock Text="{Binding CpuUpgradeSuggestion}"
+                               FontSize="12"
+                               Foreground="#424242"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- GPU Card -->
+            <Border Grid.Column="1" Grid.Row="0"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="6,0,6,6">
+              <StackPanel Spacing="12">
+                <TextBlock Text="GPU"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <StackPanel Spacing="4">
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.GpuScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="{Binding GpuScoreColor}"/>
+                  <TextBlock Text="{Binding SystemScores.Breakdown.GpuScore, StringFormat='Score: {0}/100'}"
+                             FontSize="13"
+                             Foreground="#666666"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding GpuDisplay}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+
+                <!-- Upgrade suggestion - only visible if score < 80 -->
+                <Border IsVisible="{Binding ShowGpuUpgrade}"
+                        Background="#FFF3E0"
+                        CornerRadius="4"
+                        Padding="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Suggested Upgrade:"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#F57C00"/>
+                    <TextBlock Text="{Binding GpuUpgradeSuggestion}"
+                               FontSize="12"
+                               Foreground="#424242"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- RAM Card -->
+            <Border Grid.Column="2" Grid.Row="0"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="6,0,0,6">
+              <StackPanel Spacing="12">
+                <TextBlock Text="RAM"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <StackPanel Spacing="4">
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.MemoryScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="{Binding RamScoreColor}"/>
+                  <TextBlock Text="{Binding SystemScores.Breakdown.MemoryScore, StringFormat='Score: {0}/100'}"
+                             FontSize="13"
+                             Foreground="#666666"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding RamDisplay}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+
+                <!-- Upgrade suggestion - only visible if score < 80 -->
+                <Border IsVisible="{Binding ShowRamUpgrade}"
+                        Background="#FFF3E0"
+                        CornerRadius="4"
+                        Padding="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Suggested Upgrade:"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#F57C00"/>
+                    <TextBlock Text="{Binding RamUpgradeSuggestion}"
+                               FontSize="12"
+                               Foreground="#424242"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- Storage Card -->
+            <Border Grid.Column="0" Grid.Row="1"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,6,6,0">
+              <StackPanel Spacing="12">
+                <TextBlock Text="Storage"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <StackPanel Spacing="4">
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.StorageScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="{Binding StorageScoreColor}"/>
+                  <TextBlock Text="{Binding SystemScores.Breakdown.StorageScore, StringFormat='Score: {0}/100'}"
+                             FontSize="13"
+                             Foreground="#666666"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding StorageDisplay}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+
+                <!-- Upgrade suggestion - only visible if score < 80 -->
+                <Border IsVisible="{Binding ShowStorageUpgrade}"
+                        Background="#FFF3E0"
+                        CornerRadius="4"
+                        Padding="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Suggested Upgrade:"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#F57C00"/>
+                    <TextBlock Text="{Binding StorageUpgradeSuggestion}"
+                               FontSize="12"
+                               Foreground="#424242"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- Frameworks Card -->
+            <Border Grid.Column="1" Grid.Row="1"
+                    Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="6,6,6,0">
+              <StackPanel Spacing="12">
+                <TextBlock Text="Frameworks"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#212121"/>
+
+                <StackPanel Spacing="4">
+                  <ProgressBar Value="{Binding SystemScores.Breakdown.FrameworkScore}"
+                               Minimum="0"
+                               Maximum="100"
+                               Height="8"
+                               CornerRadius="4"
+                               Foreground="{Binding FrameworkScoreColor}"/>
+                  <TextBlock Text="{Binding SystemScores.Breakdown.FrameworkScore, StringFormat='Score: {0}/100'}"
+                             FontSize="13"
+                             Foreground="#666666"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding FrameworksDisplay}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+
+                <!-- Upgrade suggestion - only visible if score < 80 -->
+                <Border IsVisible="{Binding ShowFrameworkUpgrade}"
+                        Background="#FFF3E0"
+                        CornerRadius="4"
+                        Padding="12">
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="Suggested Upgrade:"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#F57C00"/>
+                    <TextBlock Text="{Binding FrameworkUpgradeSuggestion}"
+                               FontSize="12"
+                               Foreground="#424242"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- Summary Card (spans last column) -->
+            <Border Grid.Column="2" Grid.Row="1"
+                    Background="#E8F5E9"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="6,6,0,0">
+              <StackPanel Spacing="8">
+                <TextBlock Text="System Summary"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="#2E7D32"/>
+                <TextBlock Text="{Binding UpgradeSummary}"
+                           FontSize="13"
+                           Foreground="#424242"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+
+          </Grid>
+        </StackPanel>
+
+        <!-- Recommended Models Section -->
+        <StackPanel Spacing="16">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0" Text="Recommended Models for Your System"
+                       FontSize="24" FontWeight="SemiBold" Foreground="White"/>
+            <Button Grid.Column="1" Content="Browse All 100+ Models →"
+                    Command="{Binding NavigateToModelsCommand}"
+                    Background="#1976D2" Foreground="White" Padding="12,6" CornerRadius="4"
+                    Cursor="Hand">
+              <Button.Styles>
+                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                  <Setter Property="Background" Value="#42A5F5"/>
+                </Style>
+                <Style Selector="Button:pressed /template/ ContentPresenter">
+                  <Setter Property="Background" Value="#0D47A1"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+          </Grid>
+
+          <!-- Perfect Matches (Score 90-100) -->
+          <StackPanel Spacing="12" IsVisible="{Binding HasPerfectMatches}">
+            <TextBlock Text="✨ Perfect Matches (Run smoothly with excellent performance)"
+                       FontSize="16" FontWeight="SemiBold" Foreground="#4CAF50"/>
+            <ItemsControl ItemsSource="{Binding PerfectMatchModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Background="#E8F5E9" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="#212121"/>
+                        <TextBlock Text="{Binding ExpectedPerformance}" FontSize="14"
+                                   Foreground="#388E3C"/>
+                        <TextBlock Text="{Binding Description}" FontSize="13"
+                                   Foreground="#666666" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                          <Border Background="#4CAF50" CornerRadius="4" Padding="6,3">
+                            <TextBlock Text="{Binding ParameterSize}" Foreground="White"
+                                       FontWeight="SemiBold" FontSize="11"/>
+                          </Border>
+                        </StackPanel>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <Button Content="Download via Ollama" Background="#4CAF50"
+                                Foreground="White" Padding="12,6" CornerRadius="4" Cursor="Hand"
+                                ToolTip.Tip="Coming soon: Direct Ollama integration">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#66BB6A"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                        <TextBlock Text="{Binding CompatibilityScore, StringFormat='Score: {0}/100'}"
+                                   FontSize="12" Foreground="#388E3C" HorizontalAlignment="Center"/>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Good Fit (Score 70-89) -->
+          <StackPanel Spacing="12" IsVisible="{Binding HasGoodFit}">
+            <TextBlock Text="⚡ Good Fit (Will run well with good performance)"
+                       FontSize="16" FontWeight="SemiBold" Foreground="#1976D2"/>
+            <ItemsControl ItemsSource="{Binding GoodFitModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Background="#E3F2FD" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="#212121"/>
+                        <TextBlock Text="{Binding ExpectedPerformance}" FontSize="14"
+                                   Foreground="#1565C0"/>
+                        <TextBlock Text="{Binding Description}" FontSize="13"
+                                   Foreground="#666666" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                          <Border Background="#1976D2" CornerRadius="4" Padding="6,3">
+                            <TextBlock Text="{Binding ParameterSize}" Foreground="White"
+                                       FontWeight="SemiBold" FontSize="11"/>
+                          </Border>
+                        </StackPanel>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <Button Content="Download via Ollama" Background="#1976D2"
+                                Foreground="White" Padding="12,6" CornerRadius="4" Cursor="Hand"
+                                ToolTip.Tip="Coming soon: Direct Ollama integration">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#42A5F5"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                        <TextBlock Text="{Binding CompatibilityScore, StringFormat='Score: {0}/100'}"
+                                   FontSize="12" Foreground="#1565C0" HorizontalAlignment="Center"/>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Possible with Optimization (Score 50-69) -->
+          <StackPanel Spacing="12" IsVisible="{Binding HasPossibleModels}">
+            <TextBlock Text="⚠️ Possible with Optimization (Requires quantization or tuning)"
+                       FontSize="16" FontWeight="SemiBold" Foreground="#FF9800"/>
+            <ItemsControl ItemsSource="{Binding PossibleModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Background="#FFF3E0" CornerRadius="8" Padding="16" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="#212121"/>
+                        <TextBlock Text="{Binding ExpectedPerformance}" FontSize="14"
+                                   Foreground="#F57C00"/>
+                        <TextBlock Text="{Binding Description}" FontSize="13"
+                                   Foreground="#666666" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                          <Border Background="#FF9800" CornerRadius="4" Padding="6,3">
+                            <TextBlock Text="{Binding ParameterSize}" Foreground="White"
+                                       FontWeight="SemiBold" FontSize="11"/>
+                          </Border>
+                        </StackPanel>
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center" Margin="16,0,0,0">
+                        <Button Content="View Details" Background="#FF9800"
+                                Foreground="White" Padding="12,6" CornerRadius="4" Cursor="Hand"
+                                Command="{Binding $parent[UserControl].DataContext.NavigateToModelsCommand}">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#FFB74D"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                        <TextBlock Text="{Binding CompatibilityScore, StringFormat='Score: {0}/100'}"
+                                   FontSize="12" Foreground="#F57C00" HorizontalAlignment="Center"/>
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Not Recommended (Score < 50) -->
+          <StackPanel Spacing="12" IsVisible="{Binding HasNotRecommended}">
+            <TextBlock Text="❌ Not Recommended (Hardware upgrade needed)"
+                       FontSize="16" FontWeight="SemiBold" Foreground="#F44336"/>
+            <Border Background="#FFEBEE" CornerRadius="8" Padding="16">
+              <StackPanel Spacing="8">
+                <TextBlock Text="These models require more powerful hardware than your current system provides."
+                           FontSize="14" Foreground="#666666" TextWrapping="Wrap"/>
+                <TextBlock Text="Consider the upgrade suggestions above to unlock these models."
+                           FontSize="13" Foreground="#C62828" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- No Models Message -->
+          <Border IsVisible="{Binding !HasPerfectMatches}"
+                  Background="#FFF3E0"
+                  CornerRadius="8"
+                  Padding="20">
+            <StackPanel Spacing="8">
+              <TextBlock Text="No highly compatible models found for your current system configuration."
+                         FontSize="14" FontWeight="SemiBold" Foreground="#F57C00"/>
+              <TextBlock Text="Check the 'Good Fit' and 'Possible with Optimization' sections below, or consider upgrading your hardware based on the suggestions above."
+                         FontSize="13" Foreground="#666666" TextWrapping="Wrap"/>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

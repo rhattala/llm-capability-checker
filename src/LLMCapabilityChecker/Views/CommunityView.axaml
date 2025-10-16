@@ -1,0 +1,833 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             xmlns:models="using:LLMCapabilityChecker.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+             x:Class="LLMCapabilityChecker.Views.CommunityView"
+             x:DataType="vm:CommunityViewModel">
+
+  <Design.DataContext>
+    <vm:CommunityViewModel/>
+  </Design.DataContext>
+
+  <Grid Background="Black">
+    <!-- Loading Overlay -->
+    <Border IsVisible="{Binding IsLoading}"
+            Background="#CC000000"
+            ZIndex="100">
+      <StackPanel VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Spacing="16">
+        <TextBlock Text="Loading Community Recommendations..."
+                   FontSize="20"
+                   Foreground="White"
+                   HorizontalAlignment="Center"/>
+        <ProgressBar IsIndeterminate="True"
+                     Width="300"
+                     Height="4"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Main Content -->
+    <ScrollViewer IsVisible="{Binding !IsLoading}">
+      <StackPanel Margin="32" Spacing="24">
+
+        <!-- Header with Back Button -->
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button Grid.Column="0"
+                  Content="← Back"
+                  Command="{Binding NavigateToDashboardCommand}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Foreground="White"
+                  FontSize="16"
+                  Cursor="Hand"
+                  Padding="0,0,16,0">
+            <Button.Styles>
+              <Style Selector="Button:pointerover">
+                <Setter Property="Foreground" Value="#42A5F5"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <StackPanel Grid.Column="1" Spacing="8">
+            <TextBlock Text="Community Recommendations"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="White"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="Your System:" FontSize="14" Foreground="#666666"/>
+              <TextBlock Text="{Binding UserHardwareTier}" FontSize="14" Foreground="White" FontWeight="Bold"/>
+              <TextBlock Text="•" FontSize="14" Foreground="#666666"/>
+              <TextBlock Text="{Binding UserVramGB, StringFormat='{}{0}GB VRAM'}" FontSize="14" Foreground="White"/>
+              <TextBlock Text="•" FontSize="14" Foreground="#666666"/>
+              <TextBlock Text="{Binding UserRamGB, StringFormat='{}{0}GB RAM'}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+          </StackPanel>
+
+          <Button Grid.Column="2"
+                  Content="+ Recommend a Model"
+                  Command="{Binding OpenSubmissionDialogCommand}"
+                  Background="#1976D2"
+                  Foreground="White"
+                  Padding="16,10"
+                  CornerRadius="4"
+                  Cursor="Hand">
+            <Button.Styles>
+              <Style Selector="Button:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#42A5F5"/>
+              </Style>
+              <Style Selector="Button:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="#0D47A1"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+        </Grid>
+
+        <!-- Tab Navigation -->
+        <Border Background="#1E1E1E" CornerRadius="8" Padding="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="🔥 Trending"
+                    Command="{Binding SelectTabCommand}"
+                    CommandParameter="Trending"
+                    Padding="20,10"
+                    CornerRadius="4"
+                    Cursor="Hand"
+                    Foreground="White">
+              <Button.Styles>
+                <Style Selector="Button">
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="Button:pointerover">
+                  <Setter Property="Background" Value="#424242"/>
+                </Style>
+                <Style Selector="Button[IsPressed=True]">
+                  <Setter Property="Background" Value="#1976D2"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <Button Content="⭐ Top Rated"
+                    Command="{Binding SelectTabCommand}"
+                    CommandParameter="TopRated"
+                    Padding="20,10"
+                    CornerRadius="4"
+                    Cursor="Hand"
+                    Foreground="White">
+              <Button.Styles>
+                <Style Selector="Button">
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="Button:pointerover">
+                  <Setter Property="Background" Value="#424242"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <Button Content="💻 For Your System"
+                    Command="{Binding SelectTabCommand}"
+                    CommandParameter="ForYourSystem"
+                    Padding="20,10"
+                    CornerRadius="4"
+                    Cursor="Hand"
+                    Foreground="White">
+              <Button.Styles>
+                <Style Selector="Button">
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="Button:pointerover">
+                  <Setter Property="Background" Value="#424242"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+          </StackPanel>
+        </Border>
+
+        <!-- Content Based on Selected Tab -->
+        <StackPanel Spacing="16">
+
+          <!-- Trending Models -->
+          <StackPanel IsVisible="{Binding SelectedTab, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='Trending', FallbackValue=True}">
+            <TextBlock Text="Trending Models (Last 30 Days)"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       Margin="0,0,0,16"/>
+
+            <ItemsControl ItemsSource="{Binding TrendingModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:CommunityRecommendation">
+                  <Border Background="#F5F5F5"
+                          CornerRadius="8"
+                          Padding="20"
+                          Margin="0,0,0,12">
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+
+                      <!-- Model Header -->
+                      <StackPanel Grid.Row="0" Grid.Column="0" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding ModelName}"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Foreground="#212121"/>
+
+                          <!-- Source Badge -->
+                          <Border Background="#1976D2" CornerRadius="4" Padding="6,2">
+                            <TextBlock Text="{Binding Source}"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+
+                          <!-- Official DB Badge -->
+                          <Border IsVisible="{Binding IsInOfficialDatabase}"
+                                  Background="#4CAF50"
+                                  CornerRadius="4"
+                                  Padding="6,2">
+                            <TextBlock Text="In Database"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="14"
+                                   Foreground="#555555"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="700"/>
+                      </StackPanel>
+
+                      <!-- Rating and Stats -->
+                      <StackPanel Grid.Row="0" Grid.Column="1" Spacing="8" Margin="20,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                          <TextBlock Text="⭐"
+                                     FontSize="16"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding AverageRating, StringFormat='{}{0:F1}'}"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     Foreground="#212121"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding TotalRatings, StringFormat='({0})'}"
+                                     FontSize="14"
+                                     Foreground="#666666"
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Button Content="👍 Upvote"
+                                Command="{Binding $parent[UserControl].((vm:CommunityViewModel)DataContext).UpvoteModelCommand}"
+                                CommandParameter="{Binding}"
+                                Background="#1976D2"
+                                Foreground="White"
+                                Padding="12,6"
+                                CornerRadius="4"
+                                Cursor="Hand"
+                                FontSize="12">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#42A5F5"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                      </StackPanel>
+
+                      <!-- Model Details Row -->
+                      <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                            ColumnDefinitions="Auto,Auto,Auto,Auto"
+                            Margin="0,12,0,0"
+                            ColumnSpacing="12">
+
+                        <Border Grid.Column="0"
+                                Background="#E3F2FD"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min VRAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinVramGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#1976D2"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Background="#E8F5E9"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min RAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinRamGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#4CAF50"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Background="#9C27B0"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Tier"
+                                       FontSize="11"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding CompatibleHardwareTier}"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+                          <TextBlock Text="Recommendations"
+                                     FontSize="11"
+                                     Foreground="#666666"/>
+                          <TextBlock Text="{Binding RecommendedByCount, StringFormat='{}{0} upvotes'}"
+                                     FontSize="14"
+                                     FontWeight="SemiBold"
+                                     Foreground="#1976D2"/>
+                        </StackPanel>
+                      </Grid>
+
+                      <!-- Tags Row -->
+                      <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                    ItemsSource="{Binding Tags}"
+                                    Margin="0,12,0,0">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel/>
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate>
+                            <Border Background="#E0E0E0"
+                                    CornerRadius="4"
+                                    Padding="8,4"
+                                    Margin="0,0,8,4">
+                              <TextBlock Text="{Binding}"
+                                         FontSize="12"
+                                         Foreground="#424242"/>
+                            </Border>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Top Rated Models -->
+          <StackPanel IsVisible="{Binding SelectedTab, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='TopRated', FallbackValue=False}">
+            <TextBlock Text="Top Rated Models"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       Margin="0,0,0,16"/>
+
+            <ItemsControl ItemsSource="{Binding TopRatedModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:CommunityRecommendation">
+                  <Border Background="#F5F5F5"
+                          CornerRadius="8"
+                          Padding="20"
+                          Margin="0,0,0,12">
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+
+                      <!-- Model Header -->
+                      <StackPanel Grid.Row="0" Grid.Column="0" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding ModelName}"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Foreground="#212121"/>
+
+                          <!-- Source Badge -->
+                          <Border Background="#4CAF50" CornerRadius="4" Padding="6,2">
+                            <TextBlock Text="{Binding Source}"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+
+                          <!-- Official DB Badge -->
+                          <Border IsVisible="{Binding IsInOfficialDatabase}"
+                                  Background="#1976D2"
+                                  CornerRadius="4"
+                                  Padding="6,2">
+                            <TextBlock Text="In Database"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="14"
+                                   Foreground="#555555"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="700"/>
+                      </StackPanel>
+
+                      <!-- Rating and Stats -->
+                      <StackPanel Grid.Row="0" Grid.Column="1" Spacing="8" Margin="20,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                          <TextBlock Text="⭐"
+                                     FontSize="16"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding AverageRating, StringFormat='{}{0:F1}'}"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     Foreground="#212121"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding TotalRatings, StringFormat='({0})'}"
+                                     FontSize="14"
+                                     Foreground="#666666"
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Button Content="👍 Upvote"
+                                Command="{Binding $parent[UserControl].((vm:CommunityViewModel)DataContext).UpvoteModelCommand}"
+                                CommandParameter="{Binding}"
+                                Background="#4CAF50"
+                                Foreground="White"
+                                Padding="12,6"
+                                CornerRadius="4"
+                                Cursor="Hand"
+                                FontSize="12">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#66BB6A"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                      </StackPanel>
+
+                      <!-- Model Details Row -->
+                      <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                            ColumnDefinitions="Auto,Auto,Auto,Auto"
+                            Margin="0,12,0,0"
+                            ColumnSpacing="12">
+
+                        <Border Grid.Column="0"
+                                Background="#E3F2FD"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min VRAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinVramGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#1976D2"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Background="#E8F5E9"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min RAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinRamGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#4CAF50"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Background="#9C27B0"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Tier"
+                                       FontSize="11"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding CompatibleHardwareTier}"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+                          <TextBlock Text="Recommendations"
+                                     FontSize="11"
+                                     Foreground="#666666"/>
+                          <TextBlock Text="{Binding RecommendedByCount, StringFormat='{}{0} upvotes'}"
+                                     FontSize="14"
+                                     FontWeight="SemiBold"
+                                     Foreground="#1976D2"/>
+                        </StackPanel>
+                      </Grid>
+
+                      <!-- Tags Row -->
+                      <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                    ItemsSource="{Binding Tags}"
+                                    Margin="0,12,0,0">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel/>
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate>
+                            <Border Background="#E0E0E0"
+                                    CornerRadius="4"
+                                    Padding="8,4"
+                                    Margin="0,0,8,4">
+                              <TextBlock Text="{Binding}"
+                                         FontSize="12"
+                                         Foreground="#424242"/>
+                            </Border>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- For Your System Models -->
+          <StackPanel IsVisible="{Binding SelectedTab, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='ForYourSystem', FallbackValue=False}">
+            <TextBlock Text="Recommended For Your System"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       Margin="0,0,0,16"/>
+
+            <ItemsControl ItemsSource="{Binding ForYourSystemModels}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:CommunityRecommendation">
+                  <Border Background="#F5F5F5"
+                          CornerRadius="8"
+                          Padding="20"
+                          Margin="0,0,0,12">
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto">
+
+                      <!-- Model Header -->
+                      <StackPanel Grid.Row="0" Grid.Column="0" Spacing="8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                          <TextBlock Text="{Binding ModelName}"
+                                     FontSize="18"
+                                     FontWeight="SemiBold"
+                                     Foreground="#212121"/>
+
+                          <!-- Source Badge -->
+                          <Border Background="#F57C00" CornerRadius="4" Padding="6,2">
+                            <TextBlock Text="{Binding Source}"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+
+                          <!-- Official DB Badge -->
+                          <Border IsVisible="{Binding IsInOfficialDatabase}"
+                                  Background="#1976D2"
+                                  CornerRadius="4"
+                                  Padding="6,2">
+                            <TextBlock Text="In Database"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+
+                          <!-- Compatible Badge -->
+                          <Border Background="#4CAF50" CornerRadius="4" Padding="6,2">
+                            <TextBlock Text="✓ Compatible"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+                          </Border>
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="14"
+                                   Foreground="#555555"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="700"/>
+                      </StackPanel>
+
+                      <!-- Rating and Stats -->
+                      <StackPanel Grid.Row="0" Grid.Column="1" Spacing="8" Margin="20,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                          <TextBlock Text="⭐"
+                                     FontSize="16"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding AverageRating, StringFormat='{}{0:F1}'}"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     Foreground="#212121"
+                                     VerticalAlignment="Center"/>
+                          <TextBlock Text="{Binding TotalRatings, StringFormat='({0})'}"
+                                     FontSize="14"
+                                     Foreground="#666666"
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Button Content="👍 Upvote"
+                                Command="{Binding $parent[UserControl].((vm:CommunityViewModel)DataContext).UpvoteModelCommand}"
+                                CommandParameter="{Binding}"
+                                Background="#F57C00"
+                                Foreground="White"
+                                Padding="12,6"
+                                CornerRadius="4"
+                                Cursor="Hand"
+                                FontSize="12">
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                              <Setter Property="Background" Value="#FFB74D"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                      </StackPanel>
+
+                      <!-- Model Details Row -->
+                      <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                            ColumnDefinitions="Auto,Auto,Auto,Auto"
+                            Margin="0,12,0,0"
+                            ColumnSpacing="12">
+
+                        <Border Grid.Column="0"
+                                Background="#E3F2FD"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min VRAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinVramGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#1976D2"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Background="#E8F5E9"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Min RAM"
+                                       FontSize="11"
+                                       Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding MinRamGB, StringFormat='{}{0} GB'}"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#4CAF50"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Background="#9C27B0"
+                                CornerRadius="4"
+                                Padding="10">
+                          <StackPanel Spacing="4">
+                            <TextBlock Text="Tier"
+                                       FontSize="11"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding CompatibleHardwareTier}"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                          </StackPanel>
+                        </Border>
+
+                        <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+                          <TextBlock Text="Recommendations"
+                                     FontSize="11"
+                                     Foreground="#666666"/>
+                          <TextBlock Text="{Binding RecommendedByCount, StringFormat='{}{0} upvotes'}"
+                                     FontSize="14"
+                                     FontWeight="SemiBold"
+                                     Foreground="#1976D2"/>
+                        </StackPanel>
+                      </Grid>
+
+                      <!-- Tags Row -->
+                      <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                    ItemsSource="{Binding Tags}"
+                                    Margin="0,12,0,0">
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                            <WrapPanel/>
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate>
+                            <Border Background="#E0E0E0"
+                                    CornerRadius="4"
+                                    Padding="8,4"
+                                    Margin="0,0,8,4">
+                              <TextBlock Text="{Binding}"
+                                         FontSize="12"
+                                         Foreground="#424242"/>
+                            </Border>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+        </StackPanel>
+
+        <!-- Empty State Messages -->
+        <Border IsVisible="{Binding !TrendingModels.Count}"
+                Background="#FFF3E0"
+                CornerRadius="8"
+                Padding="20">
+          <TextBlock Text="No community recommendations found. Check back later!"
+                     FontSize="14"
+                     Foreground="#F57C00"
+                     TextWrapping="Wrap"/>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Submission Dialog Overlay -->
+    <Border IsVisible="{Binding ShowSubmissionDialog}"
+            Background="#CC000000"
+            ZIndex="200">
+      <Border Background="White"
+              CornerRadius="8"
+              Padding="24"
+              MaxWidth="500"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center">
+        <StackPanel Spacing="16">
+          <TextBlock Text="Recommend a Model"
+                     FontSize="20"
+                     FontWeight="SemiBold"
+                     Foreground="#212121"/>
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="Model Name"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="#666666"/>
+            <TextBox Text="{Binding SubmissionModelName}"
+                     Watermark="e.g., DeepSeek-R1 70B"
+                     Padding="12,8"/>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="Why do you recommend it?"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="#666666"/>
+            <TextBox Text="{Binding SubmissionReason}"
+                     AcceptsReturn="True"
+                     Height="100"
+                     TextWrapping="Wrap"
+                     Watermark="Share your experience with this model..."
+                     Padding="12,8"/>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="Your Rating"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="#666666"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="⭐" FontSize="20"/>
+              <TextBlock Text="{Binding SubmissionRating}"
+                         FontSize="18"
+                         FontWeight="Bold"
+                         VerticalAlignment="Center"/>
+              <TextBlock Text="/ 5" FontSize="14" Foreground="#666666" VerticalAlignment="Center"/>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Spacing="8">
+            <TextBlock Text="Use Case"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="#666666"/>
+            <ComboBox SelectedItem="{Binding SubmissionUseCase}"
+                      Padding="12,8">
+              <ComboBoxItem Content="Chat"/>
+              <ComboBoxItem Content="Coding"/>
+              <ComboBoxItem Content="Reasoning"/>
+              <ComboBoxItem Content="Multilingual"/>
+              <ComboBoxItem Content="Enterprise"/>
+            </ComboBox>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+            <Button Content="Cancel"
+                    Command="{Binding CloseSubmissionDialogCommand}"
+                    Background="#E0E0E0"
+                    Foreground="#424242"
+                    Padding="20,10"
+                    CornerRadius="4"
+                    Cursor="Hand">
+              <Button.Styles>
+                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                  <Setter Property="Background" Value="#BDBDBD"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+
+            <Button Content="Submit"
+                    Command="{Binding SubmitRecommendationCommand}"
+                    Background="#1976D2"
+                    Foreground="White"
+                    Padding="20,10"
+                    CornerRadius="4"
+                    Cursor="Hand">
+              <Button.Styles>
+                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                  <Setter Property="Background" Value="#42A5F5"/>
+                </Style>
+                <Style Selector="Button:pressed /template/ ContentPresenter">
+                  <Setter Property="Background" Value="#0D47A1"/>
+                </Style>
+              </Button.Styles>
+            </Button>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+
+  </Grid>
+</UserControl>

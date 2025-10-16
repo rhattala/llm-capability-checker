@@ -1,0 +1,155 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+        xmlns:views="using:LLMCapabilityChecker.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="LLMCapabilityChecker.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/Icons/app-icon.ico"
+        Title="LLM Capability Checker - v1.0.0"
+        Width="1200"
+        Height="800"
+        MinWidth="900"
+        MinHeight="600">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.KeyBindings>
+        <!-- F1: Open Help -->
+        <KeyBinding Gesture="F1" Command="{Binding NavigateToHelpCommand}"/>
+        <!-- F5: Refresh (handled in DashboardView) -->
+    </Window.KeyBindings>
+
+    <Grid>
+        <!-- Top-right buttons -->
+        <StackPanel HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="0,16,16,0"
+                    ZIndex="1000">
+
+            <!-- Help button -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Padding="12,8"
+                    Command="{Binding NavigateToHelpCommand}"
+                    Cursor="Hand"
+                    ToolTip.Tip="Open Help (F1)">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="❓"
+                               FontSize="20"
+                               Foreground="White"/>
+                    <TextBlock Text="Help"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#1976D2"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+
+            <!-- Community button -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Padding="12,8"
+                    Command="{Binding NavigateToCommunityCommand}"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="👥"
+                               FontSize="20"
+                               Foreground="White"/>
+                    <TextBlock Text="Community"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#1976D2"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+
+            <!-- About button -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Padding="12,8"
+                    Command="{Binding NavigateToAboutCommand}"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ℹ"
+                               FontSize="20"
+                               Foreground="White"/>
+                    <TextBlock Text="About"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#1976D2"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+
+            <!-- Settings button -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Padding="12,8"
+                    Command="{Binding NavigateToSettingsCommand}"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="⚙"
+                               FontSize="20"
+                               Foreground="White"/>
+                    <TextBlock Text="Settings"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#1976D2"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </StackPanel>
+
+        <!-- Content control for view switching -->
+        <ContentControl Content="{Binding CurrentView}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:DashboardViewModel">
+                    <views:DashboardView/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:ComponentDetailsViewModel">
+                    <views:ComponentDetailsView/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:CommunityViewModel">
+                    <views:CommunityView/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:SettingsViewModel">
+                    <views:SettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:AboutViewModel">
+                    <views:AboutView/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:HelpViewModel">
+                    <views:HelpView/>
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </Grid>
+
+</Window>

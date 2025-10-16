@@ -1,0 +1,214 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="700"
+             x:Class="LLMCapabilityChecker.Views.AboutView"
+             x:DataType="vm:AboutViewModel">
+
+    <Design.DataContext>
+        <vm:AboutViewModel/>
+    </Design.DataContext>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="40" MaxWidth="600">
+
+            <!-- App Icon and Name -->
+            <StackPanel HorizontalAlignment="Center" Spacing="16">
+                <!-- Icon placeholder - SVG not directly supported, using fallback -->
+                <Border Width="128" Height="128"
+                        Background="#1976D2"
+                        CornerRadius="64"
+                        HorizontalAlignment="Center">
+                    <TextBlock Text="LCC"
+                               FontSize="48"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+
+                <TextBlock Text="{Binding AppName}"
+                           FontSize="32"
+                           FontWeight="Bold"
+                           Foreground="#1976D2"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="{Binding Version, StringFormat='Version {0}'}"
+                           FontSize="18"
+                           Foreground="#666666"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Description -->
+            <Border Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,32,0,0">
+                <TextBlock Text="{Binding Description}"
+                           FontSize="16"
+                           Foreground="#212121"
+                           TextWrapping="Wrap"
+                           LineHeight="24"/>
+            </Border>
+
+            <!-- Built With Section -->
+            <Border Background="#E3F2FD"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,16,0,0">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding BuiltWith}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+
+                    <ItemsControl ItemsSource="{Binding Technologies}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           FontSize="14"
+                                           Foreground="#424242"
+                                           Margin="0,2"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Spacing="12" Margin="0,16,0,0">
+                <!-- Check for Updates Button -->
+                <Button Command="{Binding CheckForUpdatesCommand}"
+                        Background="#4CAF50"
+                        Foreground="White"
+                        Padding="24,12"
+                        CornerRadius="4"
+                        HorizontalAlignment="Center"
+                        Cursor="Hand"
+                        IsEnabled="{Binding !IsCheckingForUpdates}">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#66BB6A"/>
+                        </Style>
+                        <Style Selector="Button:pressed /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#388E3C"/>
+                        </Style>
+                    </Button.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="↻" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="Check for Updates" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Update Check Message -->
+                <TextBlock Text="{Binding UpdateCheckMessage}"
+                           FontSize="14"
+                           Foreground="#666666"
+                           HorizontalAlignment="Center"
+                           IsVisible="{Binding UpdateCheckMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                <!-- GitHub Link -->
+                <Button Command="{Binding OpenGitHubCommand}"
+                        Background="#1976D2"
+                        Foreground="White"
+                        Padding="24,12"
+                        CornerRadius="4"
+                        HorizontalAlignment="Center"
+                        Cursor="Hand">
+                    <Button.Styles>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#42A5F5"/>
+                        </Style>
+                        <Style Selector="Button:pressed /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#0D47A1"/>
+                        </Style>
+                    </Button.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="★" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Text="View on GitHub" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- Copyright and License -->
+            <Border Background="#F5F5F5"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,24,0,0">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding Copyright}"
+                               FontSize="14"
+                               Foreground="#666666"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="{Binding License}"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"
+                               HorizontalAlignment="Center"/>
+
+                    <Border Background="White"
+                            BorderBrush="#E0E0E0"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                            <TextBlock Text="{Binding LicenseText}"
+                                       FontSize="12"
+                                       FontFamily="Consolas,Courier New,monospace"
+                                       Foreground="#424242"
+                                       TextWrapping="Wrap"
+                                       LineHeight="18"/>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Credits -->
+            <Border Background="#E8F5E9"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,16,0,0">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Special Thanks"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+
+                    <TextBlock FontSize="14" Foreground="#424242" TextWrapping="Wrap">
+                        <Run Text="This application is built with "/>
+                        <Run Text="Avalonia UI" FontWeight="Bold"/>
+                        <Run Text=", a cross-platform XAML-based UI framework, and "/>
+                        <Run Text=".NET" FontWeight="Bold"/>
+                        <Run Text=", Microsoft's free, open-source development platform."/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Close Button -->
+            <Button Command="{Binding CloseCommand}"
+                    Content="Close"
+                    Background="#666666"
+                    Foreground="White"
+                    Padding="32,12"
+                    CornerRadius="4"
+                    Margin="0,24,0,0"
+                    HorizontalAlignment="Center"
+                    Cursor="Hand">
+                <Button.Styles>
+                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#888888"/>
+                    </Style>
+                    <Style Selector="Button:pressed /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#444444"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

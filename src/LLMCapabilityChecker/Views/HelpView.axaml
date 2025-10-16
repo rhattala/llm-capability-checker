@@ -1,0 +1,291 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="LLMCapabilityChecker.Views.HelpView"
+             x:DataType="vm:HelpViewModel"
+             Background="#000000">
+
+  <Design.DataContext>
+    <vm:HelpViewModel/>
+  </Design.DataContext>
+
+  <Grid Margin="32" RowDefinitions="Auto,*">
+
+    <!-- Header -->
+    <StackPanel Grid.Row="0" Spacing="16" Margin="0,0,0,24">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <!-- Back Button -->
+        <Button Grid.Column="0"
+                Command="{Binding GoBackCommand}"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="8"
+                Cursor="Hand">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="←"
+                       FontSize="24"
+                       Foreground="White"
+                       VerticalAlignment="Center"/>
+            <TextBlock Text="Back"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+          <Button.Styles>
+            <Style Selector="Button:pointerover">
+              <Setter Property="Background" Value="#1976D2"/>
+            </Style>
+          </Button.Styles>
+        </Button>
+
+        <!-- Title -->
+        <TextBlock Grid.Column="1"
+                   Text="Help &amp; Documentation"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+
+        <!-- Placeholder for alignment -->
+        <Border Grid.Column="2" Width="100"/>
+      </Grid>
+
+      <!-- Search Box -->
+      <Border Background="#F5F5F5"
+              CornerRadius="8"
+              Padding="16,12">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <TextBox Grid.Column="0"
+                   Text="{Binding SearchText}"
+                   Watermark="Search help topics..."
+                   BorderThickness="0"
+                   Background="Transparent"
+                   FontSize="14"
+                   VerticalAlignment="Center"/>
+
+          <Button Grid.Column="1"
+                  Command="{Binding SearchCommand}"
+                  Background="#1976D2"
+                  Foreground="White"
+                  Content="Search"
+                  Padding="16,8"
+                  CornerRadius="4"
+                  Margin="8,0,0,0"
+                  Cursor="Hand">
+            <Button.Styles>
+              <Style Selector="Button:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#42A5F5"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <Button Grid.Column="2"
+                  Command="{Binding ClearSearchCommand}"
+                  IsVisible="{Binding IsSearchMode}"
+                  Background="#E0E0E0"
+                  Foreground="#212121"
+                  Content="Clear"
+                  Padding="16,8"
+                  CornerRadius="4"
+                  Margin="8,0,0,0"
+                  Cursor="Hand">
+            <Button.Styles>
+              <Style Selector="Button:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#BDBDBD"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+        </Grid>
+      </Border>
+    </StackPanel>
+
+    <!-- Content Area -->
+    <Grid Grid.Row="1" ColumnDefinitions="300,*">
+
+      <!-- Left Sidebar: Categories and Topics -->
+      <Border Grid.Column="0"
+              Background="#F5F5F5"
+              CornerRadius="8"
+              Padding="16"
+              Margin="0,0,16,0"
+              IsVisible="{Binding !IsSearchMode}">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding Categories}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Spacing="8" Margin="0,0,0,16">
+                  <!-- Category Header -->
+                  <Border Background="#E3F2FD"
+                          CornerRadius="4"
+                          Padding="12,8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="{Binding Icon}"
+                                 FontSize="18"
+                                 VerticalAlignment="Center"/>
+                      <TextBlock Text="{Binding Name}"
+                                 FontSize="16"
+                                 FontWeight="Bold"
+                                 Foreground="#1976D2"
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
+                  </Border>
+
+                  <!-- Topics List -->
+                  <ItemsControl ItemsSource="{Binding Topics}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Button Command="{Binding $parent[UserControl].((vm:HelpViewModel)DataContext).SelectTopicCommand}"
+                                CommandParameter="{Binding}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Padding="12,8"
+                                HorizontalContentAlignment="Left"
+                                HorizontalAlignment="Stretch"
+                                Cursor="Hand">
+                          <TextBlock Text="{Binding Title}"
+                                     FontSize="14"
+                                     Foreground="#212121"
+                                     TextWrapping="Wrap"/>
+                          <Button.Styles>
+                            <Style Selector="Button:pointerover">
+                              <Setter Property="Background" Value="#E8F5E9"/>
+                            </Style>
+                          </Button.Styles>
+                        </Button>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Left Sidebar: Search Results -->
+      <Border Grid.Column="0"
+              Background="#F5F5F5"
+              CornerRadius="8"
+              Padding="16"
+              Margin="0,0,16,0"
+              IsVisible="{Binding IsSearchMode}">
+        <ScrollViewer>
+          <StackPanel Spacing="12">
+            <TextBlock Text="{Binding SearchResults.Count, StringFormat='Found {0} results'}"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#666666"/>
+
+            <ItemsControl ItemsSource="{Binding SearchResults}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Command="{Binding $parent[UserControl].((vm:HelpViewModel)DataContext).SelectTopicCommand}"
+                          CommandParameter="{Binding}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Padding="12,8"
+                          HorizontalContentAlignment="Left"
+                          HorizontalAlignment="Stretch"
+                          Cursor="Hand">
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="14"
+                               Foreground="#212121"
+                               TextWrapping="Wrap"/>
+                    <Button.Styles>
+                      <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#E8F5E9"/>
+                      </Style>
+                    </Button.Styles>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- No Results Message -->
+            <Border IsVisible="{Binding !SearchResults.Count}"
+                    Background="#FFF3E0"
+                    CornerRadius="8"
+                    Padding="16">
+              <TextBlock Text="No results found. Try different keywords."
+                         Foreground="#F57C00"
+                         TextWrapping="Wrap"/>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Right Content Area: Topic Display -->
+      <Border Grid.Column="1"
+              Background="#FFFFFF"
+              CornerRadius="8"
+              Padding="32">
+        <ScrollViewer>
+          <Panel>
+            <StackPanel Spacing="16" IsVisible="{Binding SelectedTopic, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <!-- Topic Title -->
+            <TextBlock Text="{Binding SelectedTopic.Title}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#212121"
+                       TextWrapping="Wrap"/>
+
+            <!-- Divider -->
+            <Border Height="2"
+                    Background="#E0E0E0"
+                    Margin="0,8"/>
+
+            <!-- Topic Content -->
+            <TextBlock Text="{Binding SelectedTopic.Content}"
+                       FontSize="16"
+                       Foreground="#424242"
+                       TextWrapping="Wrap"
+                       LineHeight="28"/>
+
+            <!-- Additional Info -->
+            <Border Background="#E3F2FD"
+                    CornerRadius="8"
+                    Padding="20"
+                    Margin="0,24,0,0">
+              <StackPanel Spacing="12">
+                <TextBlock Text="💡 Need More Help?"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#1976D2"/>
+                <TextBlock FontSize="14"
+                           Foreground="#424242"
+                           TextWrapping="Wrap">
+                  <Run Text="For detailed documentation, see the"/>
+                  <Run Text="User Guide (docs/USER_GUIDE.md)" FontWeight="Bold"/>
+                  <Run Text="or"/>
+                  <Run Text="FAQ (docs/FAQ.md)" FontWeight="Bold"/>
+                  <Run Text=". For technical support, visit our GitHub repository."/>
+                </TextBlock>
+              </StackPanel>
+            </Border>
+            </StackPanel>
+
+            <!-- No Topic Selected Message -->
+            <StackPanel Spacing="16"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      IsVisible="{Binding SelectedTopic, Converter={x:Static ObjectConverters.IsNull}}">
+            <TextBlock Text="👈"
+                       FontSize="64"
+                       HorizontalAlignment="Center"
+                       Foreground="#BDBDBD"/>
+            <TextBlock Text="Select a topic from the sidebar"
+                       FontSize="18"
+                       Foreground="#9E9E9E"
+                       HorizontalAlignment="Center"/>
+            </StackPanel>
+          </Panel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

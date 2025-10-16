@@ -1,0 +1,291 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LLMCapabilityChecker.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="LLMCapabilityChecker.Views.ComponentDetailsView"
+             x:DataType="vm:ComponentDetailsViewModel">
+
+  <Design.DataContext>
+    <vm:ComponentDetailsViewModel/>
+  </Design.DataContext>
+
+  <ScrollViewer>
+    <StackPanel Margin="32" Spacing="24">
+
+      <!-- Header with Back Button -->
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Button Grid.Column="0"
+                Content="← Back to Dashboard"
+                Command="{Binding GoBackCommand}"
+                Background="#1976D2"
+                Foreground="White"
+                Padding="16,8"
+                CornerRadius="4"
+                Cursor="Hand">
+          <Button.Styles>
+            <Style Selector="Button:pointerover /template/ ContentPresenter">
+              <Setter Property="Background" Value="#42A5F5"/>
+            </Style>
+            <Style Selector="Button:pressed /template/ ContentPresenter">
+              <Setter Property="Background" Value="#0D47A1"/>
+            </Style>
+          </Button.Styles>
+        </Button>
+
+        <TextBlock Grid.Column="1"
+                   Text="{Binding ComponentTitle}"
+                   FontSize="32"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+      </Grid>
+
+      <!-- Score Card -->
+      <Border Background="#E3F2FD"
+              CornerRadius="12"
+              Padding="32">
+        <Grid ColumnDefinitions="Auto,*">
+
+          <!-- Score Circle -->
+          <StackPanel Grid.Column="0"
+                      VerticalAlignment="Center"
+                      Spacing="8"
+                      Margin="0,0,32,0">
+            <TextBlock Text="{Binding ComponentScore}"
+                       FontSize="64"
+                       FontWeight="Bold"
+                       Foreground="{Binding ScoreColor}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="/ 100"
+                       FontSize="20"
+                       Foreground="{Binding ScoreColor}"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding ComponentName}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="#424242"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
+
+          <!-- Score Details -->
+          <StackPanel Grid.Column="1"
+                      VerticalAlignment="Center"
+                      Spacing="12">
+            <TextBlock Text="{Binding ScoreDescription}"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="#212121"/>
+
+            <!-- Progress Bar -->
+            <ProgressBar Value="{Binding ComponentScore}"
+                         Maximum="100"
+                         Height="12"
+                         CornerRadius="6"
+                         Foreground="{Binding ScoreColor}"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!-- Bottleneck Analysis -->
+      <Border Background="#FFF3E0"
+              CornerRadius="8"
+              Padding="20">
+        <StackPanel Spacing="8">
+          <TextBlock Text="Bottleneck Analysis"
+                     FontSize="18"
+                     FontWeight="SemiBold"
+                     Foreground="#F57C00"/>
+          <TextBlock Text="{Binding BottleneckAnalysis}"
+                     FontSize="15"
+                     TextWrapping="Wrap"
+                     Foreground="#424242"/>
+        </StackPanel>
+      </Border>
+
+      <!-- Specifications Section -->
+      <StackPanel Spacing="16">
+        <TextBlock Text="Specifications"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="White"/>
+
+        <Border Background="#F5F5F5"
+                CornerRadius="8"
+                Padding="24">
+          <ItemsControl ItemsSource="{Binding Specifications}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="*,*" Margin="0,8">
+                  <TextBlock Grid.Column="0"
+                             Text="{Binding Name}"
+                             FontSize="15"
+                             FontWeight="SemiBold"
+                             Foreground="#666666"/>
+                  <TextBlock Grid.Column="1"
+                             Text="{Binding Value}"
+                             FontSize="15"
+                             Foreground="#212121"
+                             TextWrapping="Wrap"/>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Border>
+      </StackPanel>
+
+      <!-- Upgrade Options Section -->
+      <StackPanel Spacing="16">
+        <TextBlock Text="Upgrade Options"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   Foreground="White"/>
+
+        <ItemsControl ItemsSource="{Binding UpgradeOptions}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Background="#F5F5F5"
+                      CornerRadius="8"
+                      Padding="24"
+                      Margin="0,0,0,12">
+                <StackPanel Spacing="12">
+
+                  <!-- Header with Priority Badge -->
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding RecommendedSpecs}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="#212121"/>
+
+                    <Border Grid.Column="1"
+                            Background="#F57C00"
+                            CornerRadius="4"
+                            Padding="8,4">
+                      <TextBlock Text="{Binding PriorityLevel, StringFormat='Priority: {0}'}"
+                                 FontSize="12"
+                                 FontWeight="SemiBold"
+                                 Foreground="White"/>
+                    </Border>
+                  </Grid>
+
+                  <!-- Current vs Recommended -->
+                  <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="Current:"
+                                 FontSize="14"
+                                 FontWeight="Bold"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding CurrentSpecs}"
+                                 FontSize="14"
+                                 Foreground="#424242"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="Upgrade to:"
+                                 FontSize="14"
+                                 FontWeight="Bold"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding RecommendedSpecs}"
+                                 FontSize="14"
+                                 Foreground="#1976D2"
+                                 FontWeight="SemiBold"/>
+                    </StackPanel>
+                  </StackPanel>
+
+                  <!-- Impact & Reason -->
+                  <StackPanel Spacing="6">
+                    <Border Background="#E8F5E9"
+                            CornerRadius="4"
+                            Padding="12">
+                      <StackPanel Spacing="4">
+                        <TextBlock Text="Impact"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   Foreground="#2E7D32"/>
+                        <TextBlock Text="{Binding ImpactDescription}"
+                                   FontSize="14"
+                                   Foreground="#424242"
+                                   TextWrapping="Wrap"/>
+                      </StackPanel>
+                    </Border>
+
+                    <Border Background="#E3F2FD"
+                            CornerRadius="4"
+                            Padding="12">
+                      <StackPanel Spacing="4">
+                        <TextBlock Text="Why Upgrade?"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   Foreground="#1565C0"/>
+                        <TextBlock Text="{Binding Reason}"
+                                   FontSize="14"
+                                   Foreground="#424242"
+                                   TextWrapping="Wrap"/>
+                      </StackPanel>
+                    </Border>
+                  </StackPanel>
+
+                  <!-- Stats -->
+                  <Grid ColumnDefinitions="*,*,*">
+                    <StackPanel Grid.Column="0" Spacing="4">
+                      <TextBlock Text="Score Improvement"
+                                 FontSize="12"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding ScoreImprovement, StringFormat='+{0}'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#4CAF50"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="4" HorizontalAlignment="Center">
+                      <TextBlock Text="Estimated Cost"
+                                 FontSize="12"
+                                 Foreground="#666666"
+                                 HorizontalAlignment="Center"/>
+                      <TextBlock Text="{Binding EstimatedCost, StringFormat='${0}'}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#1976D2"
+                                 HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Spacing="4" HorizontalAlignment="Right">
+                      <TextBlock Text="Priority"
+                                 FontSize="12"
+                                 Foreground="#666666"/>
+                      <TextBlock Text="{Binding PriorityLevel}"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="#F57C00"/>
+                    </StackPanel>
+                  </Grid>
+
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- No Upgrades Message -->
+        <Border IsVisible="{Binding !UpgradeOptions.Count}"
+                Background="#E8F5E9"
+                CornerRadius="8"
+                Padding="24">
+          <StackPanel Spacing="8" HorizontalAlignment="Center">
+            <TextBlock Text="✓ No Upgrades Needed"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Foreground="#2E7D32"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="This component is performing well for LLM tasks."
+                       FontSize="15"
+                       Foreground="#424242"
+                       HorizontalAlignment="Center"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
