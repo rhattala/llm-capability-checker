@@ -18,6 +18,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2025-01-16
+
+### 🚀 Major Improvements
+
+#### Benchmark System Rewritten
+- **CRITICAL FIX: Replaced Broken Synthetic Tests with Hardware Spec-Based Scoring**
+  - Previous synthetic tests were completely inaccurate (showing 42% for high-end systems)
+  - Old system: Matrix multiplication tests showing 773/1800 CPU, 1.86/44.8 GB/s RAM
+  - New system: Direct hardware spec analysis
+    * CPU single-core: Clock speed × architecture IPC multiplier
+    * CPU multi-core: Single score × thread count with diminishing returns
+    * Memory bandwidth: Extracted from type string (e.g., "DDR5-6600" → 52.8 GB/s calculated)
+  - Architecture-aware multipliers: Raptor Lake=1.3×, Zen 4=1.3×, Alder Lake=1.25×, Zen 3=1.15×
+  - Now shows accurate comparison scores reflecting real hardware performance
+
+#### Hybrid CPU Detection Fixed
+- **Intel 12th/13th/14th Gen Hybrid Architecture Support**
+  - i9-13900K now correctly reports **24 cores, 32 threads** (was showing 8 cores)
+  - WMI `NumberOfCores` only returns P-cores on hybrid CPUs
+  - New detection: If logical_processors > cores×2, calculate total physical cores
+  - Formula: `logicalProcessors - reportedPCores = totalPhysicalCores`
+  - Fixes all Intel Alder Lake, Raptor Lake, and Raptor Lake Refresh CPUs
+
+### 📊 Technical Details
+
+**New Benchmark Calculations:**
+- `CalculateCpuSingleScore()`: Base clock GHz × 1000 × architecture multiplier
+- `CalculateCpuMultiScore()`: Single score × threads (with >16 thread scaling penalty)
+- `CalculateMemoryBandwidth()`: Regex extract MT/s from type, calc `(speed×8×2)/1000`
+
+**CPU Generation Detection:**
+- Intel 13th/14th Gen: 1.3× IPC
+- Intel 12th Gen: 1.25× IPC
+- AMD Ryzen 7000: 1.3× IPC
+- AMD Ryzen 5000: 1.15× IPC
+
+### ⚠️ Known Limitations
+
+**Model Database Still Static (v1.0.4 Priority):**
+- Models hardcoded in `data/models.json` (last updated: January 15, 2025)
+- No awareness of models released after this date
+- Next release will implement:
+  - Ollama Library API integration for live model catalog
+  - HuggingFace Model Hub API integration
+  - Automatic updates with local JSON fallback
+
+---
+
 ## [1.0.2] - 2025-01-16
 
 ### 🔄 Changed

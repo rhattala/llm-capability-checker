@@ -7,7 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationIcon>Assets\Icons\app-icon.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.0.3</Version>
 
     <!-- Application Metadata -->
     <Company>LLM Capability Checker Team</Company>
