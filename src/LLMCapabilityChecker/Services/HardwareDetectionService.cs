@@ -100,8 +100,38 @@ public class HardwareDetectionService : IHardwareDetectionService
                 if (processor != null)
                 {
                     cpuInfo.Model = processor["Name"]?.ToString()?.Trim() ?? "Unknown";
-                    cpuInfo.Cores = Convert.ToInt32(processor["NumberOfCores"] ?? 0);
+
+                    // For hybrid CPUs (Intel 12th gen+), NumberOfCores only returns P-cores
+                    // NumberOfLogicalProcessors gives total threads
+                    // Calculate physical cores: For non-HT cores (E-cores), threads = cores
+                    // For HT cores (P-cores), threads = cores * 2
+                    // Best approach: Use total physical core count from all processors
+                    int totalCores = 0;
+                    foreach (var proc in collection.Cast<ManagementObject>())
+                    {
+                        totalCores += Convert.ToInt32(proc["NumberOfCores"] ?? 0);
+                    }
+
+                    // If we have hybrid architecture, NumberOfCores underreports
+                    // Check if logical processors >> cores (indicates hybrid)
+                    int logicalProcs = Convert.ToInt32(processor["NumberOfLogicalProcessors"] ?? 0);
+                    if (logicalProcs > totalCores * 2)
+                    {
+                        // Hybrid CPU detected (e.g., i9-13900K: 8 P-cores + 16 E-cores = 24, but NumberOfCores reports 8)
+                        // Estimate: (logicalProcs - P-cores) = E-cores + P-core threads
+                        // For i9-13900K: (32 - 8) = 24 total cores
+                        // This is an approximation, but better than showing 8
+                        cpuInfo.Cores = logicalProcs - totalCores;
+                    }
+                    else
+                    {
+                        cpuInfo.Cores = totalCores > 0 ? totalCores : cpuInfo.Threads / 2;
+                    }
+
                     cpuInfo.BaseClockGHz = Convert.ToDouble(processor["MaxClockSpeed"] ?? 0) / 1000.0;
+
+                    _logger.LogDebug("CPU cores calculation: NumberOfCores={Reported}, LogicalProcessors={Logical}, Calculated={Calculated}",
+                        totalCores, logicalProcs, cpuInfo.Cores);
                 }
             });
 

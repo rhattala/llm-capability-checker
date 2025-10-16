@@ -31,6 +31,7 @@ public class BenchmarkService : IBenchmarkService
 
     /// <summary>
     /// Runs system benchmark tests to estimate LLM inference performance
+    /// Uses hardware specs instead of synthetic tests for accurate scoring
     /// </summary>
     public async Task<BenchmarkResults> RunSystemBenchmarkAsync()
     {
@@ -40,15 +41,15 @@ public class BenchmarkService : IBenchmarkService
 
         try
         {
-            // Run benchmarks
-            var cpuSingleScore = await RunCpuSingleCoreTestAsync();
-            var cpuMultiScore = await RunCpuMultiCoreTestAsync();
-            var memoryBandwidth = await RunMemoryBandwidthTestAsync();
+            // Get hardware info
+            var hardwareInfo = await _hardwareService.DetectHardwareAsync();
+
+            // Calculate scores based on actual hardware specs (not synthetic tests)
+            var cpuSingleScore = CalculateCpuSingleScore(hardwareInfo.Cpu);
+            var cpuMultiScore = CalculateCpuMultiScore(hardwareInfo.Cpu);
+            var memoryBandwidth = CalculateMemoryBandwidth(hardwareInfo.Memory);
 
             stopwatch.Stop();
-
-            // Get hardware info for GPU considerations
-            var hardwareInfo = await _hardwareService.DetectHardwareAsync();
 
             // Calculate estimated tokens/second for different model sizes
             var tokenThroughput = EstimateTokenThroughput(
@@ -94,7 +95,99 @@ public class BenchmarkService : IBenchmarkService
     }
 
     /// <summary>
-    /// Runs a simple CPU single-core benchmark test
+    /// Calculate CPU single-core score based on clock speed and architecture
+    /// Uses estimated IPC (Instructions Per Cycle) based on CPU generation
+    /// </summary>
+    private double CalculateCpuSingleScore(CpuInfo cpu)
+    {
+        // Base score from clock speed
+        double baseScore = cpu.BaseClockGHz * 1000;
+
+        // Architecture multipliers (estimated IPC improvements)
+        double architectureMultiplier = 1.0;
+        if (cpu.Model.Contains("13th Gen", StringComparison.OrdinalIgnoreCase) ||
+            cpu.Model.Contains("14th Gen", StringComparison.OrdinalIgnoreCase))
+        {
+            architectureMultiplier = 1.3; // Raptor Lake
+        }
+        else if (cpu.Model.Contains("12th Gen", StringComparison.OrdinalIgnoreCase))
+        {
+            architectureMultiplier = 1.25; // Alder Lake
+        }
+        else if (cpu.Model.Contains("7000", StringComparison.OrdinalIgnoreCase) ||
+                 cpu.Model.Contains("Ryzen 7", StringComparison.OrdinalIgnoreCase))
+        {
+            architectureMultiplier = 1.3; // Zen 4
+        }
+        else if (cpu.Model.Contains("5000", StringComparison.OrdinalIgnoreCase) ||
+                 cpu.Model.Contains("Ryzen 5", StringComparison.OrdinalIgnoreCase))
+        {
+            architectureMultiplier = 1.15; // Zen 3
+        }
+
+        return Math.Round(baseScore * architectureMultiplier, 0);
+    }
+
+    /// <summary>
+    /// Calculate CPU multi-core score based on cores, threads, and clock speed
+    /// </summary>
+    private double CalculateCpuMultiScore(CpuInfo cpu)
+    {
+        // Single-core performance as base
+        double singleScore = CalculateCpuSingleScore(cpu);
+
+        // Scaling efficiency (not linear due to diminishing returns)
+        double threadScaling = cpu.Threads;
+        if (cpu.Threads > 16)
+        {
+            // Reduced scaling for high thread counts
+            threadScaling = 16 + (cpu.Threads - 16) * 0.85;
+        }
+
+        return Math.Round(singleScore * threadScaling / 2, 0);
+    }
+
+    /// <summary>
+    /// Calculate memory bandwidth from memory specs
+    /// </summary>
+    private double CalculateMemoryBandwidth(MemoryInfo memory)
+    {
+        // Extract memory speed from type string (e.g., "DDR5-6600" -> 6600)
+        double memorySpeed = 3200; // Default fallback
+        if (memory.Type.Contains("DDR5", StringComparison.OrdinalIgnoreCase))
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(memory.Type, @"(\d{4,5})");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int speed))
+            {
+                memorySpeed = speed;
+            }
+            else
+            {
+                memorySpeed = 5600; // Default DDR5 speed
+            }
+        }
+        else if (memory.Type.Contains("DDR4", StringComparison.OrdinalIgnoreCase))
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(memory.Type, @"(\d{4})");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int speed))
+            {
+                memorySpeed = speed;
+            }
+            else
+            {
+                memorySpeed = 3200; // Default DDR4 speed
+            }
+        }
+
+        // Calculate bandwidth: MT/s * bus width (64 bits = 8 bytes) / 1000 = GB/s
+        // DDR is dual-channel, so multiply by 2
+        double bandwidth = (memorySpeed * 8 * 2) / 1000.0;
+
+        return Math.Round(bandwidth, 1);
+    }
+
+    /// <summary>
+    /// Runs a simple CPU single-core benchmark test (DEPRECATED - now using hardware specs)
     /// Tests single-threaded matrix multiplication performance
     /// </summary>
     private async Task<double> RunCpuSingleCoreTestAsync()
