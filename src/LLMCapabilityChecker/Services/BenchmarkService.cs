@@ -15,10 +15,11 @@ public class BenchmarkService : IBenchmarkService
     private readonly IHardwareDetectionService _hardwareService;
 
     // Reference baseline scores (approximate scores for mid-tier system)
-    // Based on: AMD Ryzen 5 5600X, 32GB DDR4-3200, RTX 3060
-    private const double REFERENCE_CPU_SINGLE = 1000.0;
-    private const double REFERENCE_CPU_MULTI = 6000.0;
-    private const double REFERENCE_MEMORY_BW = 25.0; // GB/s
+    // Based on: AMD Ryzen 5 7600 (6C/12T), 32GB DDR5-5600, RTX 4060 8GB
+    // Updated: January 2025 - Current mid-tier gaming/workstation build
+    private const double REFERENCE_CPU_SINGLE = 1800.0; // Cinebench R23 single-core equivalent
+    private const double REFERENCE_CPU_MULTI = 14000.0; // Cinebench R23 multi-core equivalent
+    private const double REFERENCE_MEMORY_BW = 44.8; // GB/s (DDR5-5600 dual-channel)
 
     public BenchmarkService(
         ILogger<BenchmarkService> logger,

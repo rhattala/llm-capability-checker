@@ -18,6 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2025-01-16
+
+### 🔄 Changed
+
+#### Reference System Update
+- **Updated Benchmark Baseline to 2025 Mid-Tier Standards**
+  - CPU: AMD Ryzen 5 7600 (6C/12T, Zen 4) - up from Ryzen 5 5600X
+  - GPU: RTX 4060 8GB (Ada Lovelace) - up from RTX 3060 12GB
+  - RAM: 32GB DDR5-5600 (44.8 GB/s) - up from DDR4-3200 (25 GB/s)
+  - Storage: NVMe Gen4 - up from Gen3
+  - Cinebench R23 baseline: 1800 single / 14000 multi (up from 1000/6000)
+  - Memory bandwidth baseline: 44.8 GB/s (up from 25 GB/s)
+  - This reflects current 2025 mid-tier gaming/workstation builds (~$800)
+  - Your comparison scores may change but remain accurate relative to current hardware
+
+#### Storage Detection Enhancement
+- **Multi-Drive Scanning with Intelligent Selection**
+  - Now queries ALL physical drives (not just DeviceId='0')
+  - Priority-based selection: NVMe Gen5=110, NVMe=100, SSD=50, HDD=10
+  - Displays "NVMe (fastest of 3)" when multiple drives detected
+  - Special detection for PCIe Gen 5 drives (Crucial T705/T700)
+  - All detection is dynamic via WMI queries (no hardcoded values)
+
+---
+
 ## [1.0.1] - 2025-01-16
 
 ### 🔧 Fixed

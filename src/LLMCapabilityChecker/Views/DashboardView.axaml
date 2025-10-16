@@ -226,22 +226,22 @@
                         RowSpacing="6" ColumnSpacing="12" Margin="0,12,0,0">
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="CPU:" FontWeight="SemiBold"
                                Foreground="#424242"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="AMD Ryzen 5 5600X (6-core, 3.7GHz)"
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="AMD Ryzen 5 7600 (6C/12T, 3.8-5.1GHz, Zen 4)"
                                Foreground="#666666"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="GPU:" FontWeight="SemiBold"
                                Foreground="#424242"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="NVIDIA RTX 3060 12GB (Ampere, CUDA 12.1)"
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="NVIDIA RTX 4060 8GB (Ada Lovelace, CUDA 12.2)"
                                Foreground="#666666"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="RAM:" FontWeight="SemiBold"
                                Foreground="#424242"/>
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="32GB DDR4-3200"
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="32GB DDR5-5600 (44.8 GB/s dual-channel)"
                                Foreground="#666666"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Storage:" FontWeight="SemiBold"
                                Foreground="#424242"/>
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="1TB NVMe Gen3 (Samsung 970 EVO)"
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="1TB NVMe Gen4 (typical mid-tier build)"
                                Foreground="#666666"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Updated:" FontWeight="SemiBold"
