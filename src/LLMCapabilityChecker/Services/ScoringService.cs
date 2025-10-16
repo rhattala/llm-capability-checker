@@ -84,11 +84,11 @@ public class ScoringService : IScoringService
         else if (vram >= 24)
             scores.TrainingCapability = "Full fine-tuning of 7B models";
         else if (vram >= 16)
-            scores.TrainingCapability = "Full fine-tuning of 3B models";
+            scores.TrainingCapability = "Full fine-tuning up to 3B models";
         else if (vram >= 12)
-            scores.TrainingCapability = "Full fine-tuning of 1B models";
+            scores.TrainingCapability = $"LoRA training only (you have {vram}GB VRAM, full training needs 16GB+)";
         else
-            scores.TrainingCapability = "Training not recommended";
+            scores.TrainingCapability = $"Training requires 12GB+ VRAM (you have {vram}GB). Use LoRA/QLoRA instead →";
 
         // Fine-tuning capabilities (LoRA/QLoRA)
         if (vram >= 16)

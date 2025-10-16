@@ -63,6 +63,16 @@ public class ModelInfo
     public string Url { get; set; } = string.Empty;
 
     /// <summary>
+    /// Ollama library URL for direct download
+    /// </summary>
+    public string OllamaUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Hugging Face model URL
+    /// </summary>
+    public string HuggingFaceUrl { get; set; } = string.Empty;
+
+    /// <summary>
     /// License type
     /// </summary>
     public string License { get; set; } = string.Empty;

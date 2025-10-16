@@ -489,7 +489,72 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand]
     private void NavigateToModels()
     {
-        NavigateToModelsList?.Invoke();
+        // Open Ollama library in browser as fallback
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "https://ollama.com/library",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to open Ollama library URL");
+        }
+    }
+
+    /// <summary>
+    /// Downloads a model via Ollama or Hugging Face
+    /// </summary>
+    [RelayCommand]
+    private void DownloadModel(ModelInfo? model)
+    {
+        if (model == null) return;
+
+        try
+        {
+            // Priority: Ollama URL > Hugging Face URL > Generic URL
+            string url = string.Empty;
+
+            if (!string.IsNullOrEmpty(model.OllamaUrl))
+                url = model.OllamaUrl;
+            else if (!string.IsNullOrEmpty(model.HuggingFaceUrl))
+                url = model.HuggingFaceUrl;
+            else if (!string.IsNullOrEmpty(model.Url))
+                url = model.Url;
+
+            if (!string.IsNullOrEmpty(url))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+                _logger.LogInformation("Opened download URL for model: {ModelName}", model.Name);
+            }
+            else
+            {
+                // Fallback: construct Ollama URL from model name
+                string modelSlug = model.Name.ToLower()
+                    .Replace(" ", "-")
+                    .Replace("llama 4", "llama4")
+                    .Replace("phi-", "phi")
+                    .Replace("qwen ", "qwen");
+
+                url = $"https://ollama.com/library/{modelSlug}";
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+                _logger.LogInformation("Opened constructed Ollama URL for model: {ModelName}", model.Name);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to open download URL for model: {ModelName}", model.Name);
+        }
     }
 
     /// <summary>

@@ -18,7 +18,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - Unreleased
+## [1.0.1] - 2025-01-16
+
+### 🔧 Fixed
+
+#### Training Score Clarity
+- **Improved Training Capability Messages**: Training score now provides clear context when VRAM is insufficient
+  - Changed "Training not recommended" to actionable message: "Training requires 12GB+ VRAM (you have 11GB). Use LoRA/QLoRA instead →"
+  - Users with 11GB VRAM now see: "LoRA training only (you have 11GB VRAM, full training needs 16GB+)"
+  - Messages now explain requirements and alternatives instead of just saying "not recommended"
+
+#### Model Download Links
+- **Working Download Buttons**: "Download via Ollama" buttons now functional
+  - Opens model page in browser (Ollama library or Hugging Face)
+  - Falls back to constructing Ollama URL from model name if not specified
+  - "Browse All 100+ Models" button opens Ollama library
+  - Added `OllamaUrl` and `HuggingFaceUrl` properties to ModelInfo
+
+#### Storage Detection
+- **Enhanced NVMe Detection**: More reliable NVMe vs SSD identification
+  - Added model name checking for common NVMe brands (Samsung 970/980/990, WD Black, Corsair MP, Kingston NV, Crucial P)
+  - Added FriendlyName checking as additional detection method
+  - Improved logging to help debug detection issues
+  - Now checks both BusType (17 = NVMe) and model name patterns
+
+### 🎯 Changed
+- Model download buttons tooltip changed from "Coming soon" to "Open download page in browser"
+- More detailed hardware detection logging for troubleshooting
+
+---
+
+## [1.0.0] - 2025-01-15
 
 ### 🎉 Initial Release
 

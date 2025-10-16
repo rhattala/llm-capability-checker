@@ -663,19 +663,39 @@ public class HardwareDetectionService : IHardwareDetectionService
                     {
                         ushort mediaType = Convert.ToUInt16(msftDisk["MediaType"] ?? 0);
                         ushort busType = Convert.ToUInt16(msftDisk["BusType"] ?? 0);
+                        string model = msftDisk["Model"]?.ToString() ?? "";
+                        string friendlyName = msftDisk["FriendlyName"]?.ToString() ?? "";
 
-                        _logger.LogDebug("MSFT_PhysicalDisk: MediaType={MediaType}, BusType={BusType}", mediaType, busType);
+                        _logger.LogDebug("MSFT_PhysicalDisk: MediaType={MediaType}, BusType={BusType}, Model={Model}, FriendlyName={FriendlyName}",
+                            mediaType, busType, model, friendlyName);
 
                         // MediaType: 3 = HDD, 4 = SSD, 5 = SCM
-                        // BusType: 17 = NVMe, 11 = SATA, 7 = USB
+                        // BusType: 17 = NVMe, 11 = SATA, 7 = USB, 15 = USB, 1 = SCSI
                         if (busType == 17)
                         {
                             storageInfo.Type = "NVMe";
                             detectedType = true;
+                            _logger.LogInformation("Detected NVMe drive via BusType=17: {Model}", model);
                         }
                         else if (mediaType == 4)
                         {
-                            storageInfo.Type = "SSD";
+                            // Check model name for NVMe indicators even if BusType isn't 17
+                            if (model.Contains("NVMe", StringComparison.OrdinalIgnoreCase) ||
+                                friendlyName.Contains("NVMe", StringComparison.OrdinalIgnoreCase) ||
+                                model.Contains("Samsung 9", StringComparison.OrdinalIgnoreCase) || // Samsung 970/980/990
+                                model.Contains("WD_BLACK", StringComparison.OrdinalIgnoreCase) ||
+                                model.Contains("WD Black", StringComparison.OrdinalIgnoreCase) ||
+                                model.Contains("Corsair MP", StringComparison.OrdinalIgnoreCase) ||
+                                model.Contains("Kingston NV", StringComparison.OrdinalIgnoreCase) ||
+                                model.Contains("Crucial P", StringComparison.OrdinalIgnoreCase))
+                            {
+                                storageInfo.Type = "NVMe";
+                                _logger.LogInformation("Detected NVMe drive via model name: {Model}", model);
+                            }
+                            else
+                            {
+                                storageInfo.Type = "SSD";
+                            }
                             detectedType = true;
                         }
                         else if (mediaType == 3)
