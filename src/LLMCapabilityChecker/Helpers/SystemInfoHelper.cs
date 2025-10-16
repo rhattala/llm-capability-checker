@@ -63,18 +63,18 @@ public static class SystemInfoHelper
     }
 
     /// <summary>
-    /// Convert bytes to gigabytes
+    /// Convert bytes to gigabytes (rounded to nearest GB)
     /// </summary>
     public static int BytesToGB(long bytes)
     {
-        return (int)(bytes / (1024 * 1024 * 1024));
+        return (int)Math.Round((double)bytes / (1024 * 1024 * 1024));
     }
 
     /// <summary>
-    /// Convert megabytes to gigabytes
+    /// Convert megabytes to gigabytes (rounded to nearest GB)
     /// </summary>
     public static int MBToGB(long megabytes)
     {
-        return (int)(megabytes / 1024);
+        return (int)Math.Round((double)megabytes / 1024);
     }
 }

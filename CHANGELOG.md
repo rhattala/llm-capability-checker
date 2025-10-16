@@ -42,6 +42,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved logging to help debug detection issues
   - Now checks both BusType (17 = NVMe) and model name patterns
 
+#### RAM/VRAM Display Accuracy
+- **Fixed Rounding Issue**: RAM and VRAM now round to nearest GB instead of truncating
+  - 64GB RAM now displays as 64GB (was showing 63GB)
+  - 12GB VRAM now displays as 12GB (was showing 11GB)
+  - Changed `BytesToGB()` and `MBToGB()` to use `Math.Round()` instead of integer division
+
 ### 🎯 Changed
 - Model download buttons tooltip changed from "Coming soon" to "Open download page in browser"
 - More detailed hardware detection logging for troubleshooting
