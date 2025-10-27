@@ -51,9 +51,10 @@ public class UpgradeAdvisorService : IUpgradeAdvisorService
                 recommendations.AddRange(GenerateRamUpgrades(hardware, primaryBottleneck == "Memory"));
             }
 
-            // Storage upgrades for HDD or slow SSDs
+            // Storage upgrades for HDD or slow SSDs or low available space
             if (!hardware.Storage.Type.Contains("NVMe", StringComparison.OrdinalIgnoreCase) ||
-                scores.Breakdown.StorageScore < 60)
+                scores.Breakdown.StorageScore < 60 ||
+                hardware.Storage.AvailableGB < 200)
             {
                 recommendations.AddRange(GenerateStorageUpgrades(hardware, primaryBottleneck == "Storage"));
             }
@@ -70,11 +71,10 @@ public class UpgradeAdvisorService : IUpgradeAdvisorService
                 recommendations.Add(GenerateCudaRecommendation());
             }
 
-            // Sort by priority and score improvement, take top 3-5
+            // Sort by priority and score improvement, return all recommendations
             var finalRecommendations = recommendations
                 .OrderByDescending(r => GetPriorityWeight(r.PriorityLevel))
                 .ThenByDescending(r => r.ScoreImprovement)
-                .Take(5)
                 .ToList();
 
             _logger.LogInformation("Generated {Count} upgrade recommendations", finalRecommendations.Count);

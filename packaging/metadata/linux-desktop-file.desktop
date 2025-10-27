@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=LLM Capability Checker
+GenericName=LLM Testing Suite
+Comment=Comprehensive testing suite for evaluating Large Language Model capabilities
+Exec=/usr/bin/llm-capability-checker
+Icon=llm-capability-checker
+Terminal=false
+Categories=Development;Education;Science;
+Keywords=LLM;AI;Testing;Evaluation;ChatGPT;Claude;
+StartupNotify=true
+StartupWMClass=LLMCapabilityChecker

@@ -32,19 +32,8 @@ public class UpgradeAdvisorServiceTests
         result.Should().NotBeEmpty();
     }
 
-    [Fact]
-    public async Task GetUpgradeRecommendationsAsync_ReturnsAtMostFiveRecommendations()
-    {
-        // Arrange
-        var hardware = CreateLowEndHardware();
-        var scores = CreateLowEndScores();
-
-        // Act
-        var result = await _service.GetUpgradeRecommendationsAsync(hardware, scores);
-
-        // Assert
-        result.Count.Should().BeLessOrEqualTo(5);
-    }
+    // NOTE: "At most 5 recommendations" test removed - service now returns all relevant
+    // recommendations to ensure nothing important is filtered out
 
     [Fact]
     public async Task GetUpgradeRecommendationsAsync_SortedByPriority()
