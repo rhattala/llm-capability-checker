@@ -165,42 +165,27 @@ No fluff. Just facts.
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Option 1: Download and Run (Easiest)
 
-- **.NET 8.0** - [Download here](https://dotnet.microsoft.com/download/dotnet/8.0) (free)
-- **Windows 10/11**, **Linux**, or **macOS**
-- **5 minutes** of your time
+**Windows:**
+1. Download [LLMCapabilityChecker-v1.0.4-win-x64.zip](https://github.com/random-llama/llm-capability-checker/releases/latest)
+2. Extract the zip
+3. Double-click `LLMCapabilityChecker.exe`
 
-### Installation (3 Steps)
+That's it! No installation required.
 
-#### Option 1: Run from Source (Easiest)
+**Linux/macOS:** Pre-built binaries coming soon. Use Option 2 below for now.
+
+### Option 2: Build from Source (For Developers)
+
+**Prerequisites:** [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ```bash
-# 1. Clone the repo
+# Clone and run
 git clone https://github.com/random-llama/llm-capability-checker.git
 cd llm-capability-checker
-
-# 2. Run it!
 dotnet run --project src/LLMCapabilityChecker/LLMCapabilityChecker.csproj
 ```
-
-That's it! The app will launch and scan your hardware automatically.
-
-#### Option 2: Build for Production
-
-```bash
-# Build optimized version
-dotnet build src/LLMCapabilityChecker/LLMCapabilityChecker.csproj --configuration Release
-
-# Run it
-dotnet run --project src/LLMCapabilityChecker/LLMCapabilityChecker.csproj --configuration Release
-```
-
-#### Option 3: Pre-built Binaries
-
-Download from [Releases](https://github.com/random-llama/llm-capability-checker/releases) → Extract → Double-click
-
-*(Coming soon once we have our first release)*
 
 ### Platform-Specific Requirements
 
