@@ -1126,11 +1126,11 @@
                         </StackPanel>
                       </StackPanel>
                       <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center" Margin="16,0,0,0">
-                        <Button Content="Download via Ollama" Background="#4CAF50"
+                        <Button Content="View on HuggingFace" Background="#4CAF50"
                                 Foreground="White" Padding="12,6" CornerRadius="4" Cursor="Hand"
                                 Command="{Binding $parent[UserControl].((vm:DashboardViewModel)DataContext).DownloadModelCommand}"
                                 CommandParameter="{Binding}"
-                                ToolTip.Tip="Open download page in browser">
+                                ToolTip.Tip="Open model page on HuggingFace or Ollama">
                           <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
                               <Setter Property="Background" Value="#66BB6A"/>
@@ -1171,11 +1171,11 @@
                         </StackPanel>
                       </StackPanel>
                       <StackPanel Grid.Column="1" Spacing="8" VerticalAlignment="Center" Margin="16,0,0,0">
-                        <Button Content="Download via Ollama" Background="#1976D2"
+                        <Button Content="View on HuggingFace" Background="#1976D2"
                                 Foreground="White" Padding="12,6" CornerRadius="4" Cursor="Hand"
                                 Command="{Binding $parent[UserControl].((vm:DashboardViewModel)DataContext).DownloadModelCommand}"
                                 CommandParameter="{Binding}"
-                                ToolTip.Tip="Open download page in browser">
+                                ToolTip.Tip="Open model page on HuggingFace or Ollama">
                           <Button.Styles>
                             <Style Selector="Button:pointerover /template/ ContentPresenter">
                               <Setter Property="Background" Value="#42A5F5"/>

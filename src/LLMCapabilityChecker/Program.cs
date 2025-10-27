@@ -53,7 +53,11 @@ sealed class Program
             builder.SetMinimumLevel(LogLevel.Information);
         });
 
+        // Register HttpClient for API services
+        services.AddHttpClient();
+
         // Register services
+        services.AddSingleton<Services.HuggingFaceModelService>();
         services.AddSingleton<Services.IHardwareDetectionService, Services.HardwareDetectionService>();
         services.AddSingleton<Services.IScoringService, Services.ScoringService>();
         services.AddSingleton<Services.IModelDatabaseService, Services.ModelDatabaseService>();

@@ -76,6 +76,16 @@ public class ModelInfo
     /// License type
     /// </summary>
     public string License { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Source of the model data ("Local", "HuggingFace", etc.)
+    /// </summary>
+    public string Source { get; set; } = "Local";
+
+    /// <summary>
+    /// Unique identifier for the model
+    /// </summary>
+    public string Id { get; set; } = string.Empty;
 }
 
 /// <summary>

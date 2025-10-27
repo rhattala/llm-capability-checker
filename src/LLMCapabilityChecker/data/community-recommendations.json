@@ -1,6 +1,7 @@
 {
-  "version": "1.0",
-  "lastUpdated": "2025-01-15T00:00:00Z",
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-25T00:00:00Z",
+  "disclaimer": "SAMPLE DATA - These are example community recommendations for demonstration purposes only. Real community features require a backend API, which will be implemented in a future version. User submissions are saved locally in your AppData folder but not shared with the community.",
   "recommendations": [
     {
       "modelName": "DeepSeek-R1 70B",

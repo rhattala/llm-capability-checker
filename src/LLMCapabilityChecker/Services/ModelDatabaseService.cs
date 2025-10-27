@@ -8,27 +8,72 @@ using System.Threading.Tasks;
 namespace LLMCapabilityChecker.Services;
 
 /// <summary>
-/// Model database service with hardcoded popular LLM models
+/// Model database service with dynamic HuggingFace integration and local fallback
 /// </summary>
 public class ModelDatabaseService : IModelDatabaseService
 {
     private readonly ILogger<ModelDatabaseService> _logger;
+    private readonly HuggingFaceModelService? _huggingFaceService;
     private readonly List<ModelInfo> _models;
+    private bool _dynamicModelsLoaded = false;
 
-    public ModelDatabaseService(ILogger<ModelDatabaseService> logger)
+    public ModelDatabaseService(ILogger<ModelDatabaseService> logger, HuggingFaceModelService? huggingFaceService = null)
     {
         _logger = logger;
+        _huggingFaceService = huggingFaceService;
         _models = InitializeModels();
-        _logger.LogInformation("Initialized model database with {Count} models", _models.Count);
+        _logger.LogInformation("Initialized model database with {Count} local models", _models.Count);
     }
 
-    public Task<List<ModelInfo>> GetAllModelsAsync()
+    /// <summary>
+    /// Load models from HuggingFace API and merge with local database
+    /// </summary>
+    private async Task LoadDynamicModelsAsync()
     {
-        return Task.FromResult(_models.ToList());
+        if (_dynamicModelsLoaded || _huggingFaceService == null)
+        {
+            return;
+        }
+
+        try
+        {
+            _logger.LogInformation("Fetching models from HuggingFace API...");
+            var hfModels = await _huggingFaceService.FetchModelsAsync(limit: 50);
+
+            if (hfModels.Count > 0)
+            {
+                var convertedModels = _huggingFaceService.ConvertToModelInfo(hfModels);
+
+                // Merge with existing models (avoid duplicates)
+                int addedCount = 0;
+                foreach (var newModel in convertedModels)
+                {
+                    if (!_models.Any(m => m.Id == newModel.Id || m.Name.Equals(newModel.Name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        _models.Add(newModel);
+                        addedCount++;
+                    }
+                }
+
+                _dynamicModelsLoaded = true;
+                _logger.LogInformation("Added {Count} new models from HuggingFace. Total: {Total}", addedCount, _models.Count);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to load dynamic models from HuggingFace, using local database only");
+        }
     }
 
-    public Task<List<ModelInfo>> GetRecommendedModelsAsync(HardwareInfo hardware)
+    public async Task<List<ModelInfo>> GetAllModelsAsync()
     {
+        await LoadDynamicModelsAsync();
+        return _models.ToList();
+    }
+
+    public async Task<List<ModelInfo>> GetRecommendedModelsAsync(HardwareInfo hardware)
+    {
+        await LoadDynamicModelsAsync();
         var recommended = new List<ModelInfo>();
 
         foreach (var model in _models)
@@ -55,7 +100,7 @@ public class ModelDatabaseService : IModelDatabaseService
             hardware.Gpu?.VramGB ?? 0,
             hardware.Memory.TotalGB);
 
-        return Task.FromResult(recommended);
+        return recommended;
     }
 
     public Task<ModelInfo?> GetModelByNameAsync(string name)
