@@ -146,8 +146,8 @@ public class HardwareDetectionServiceTests
 
         // Assert
         result.Cpu.Architecture.Should().NotBeNullOrEmpty();
-        // Common architectures
-        var validArchitectures = new[] { "x64", "X64", "x86", "ARM64", "arm64" };
+        // Common architectures (including mixed case variants)
+        var validArchitectures = new[] { "x64", "X64", "x86", "ARM64", "arm64", "Arm64" };
         result.Cpu.Architecture.Should().ContainAny(validArchitectures);
     }
 
