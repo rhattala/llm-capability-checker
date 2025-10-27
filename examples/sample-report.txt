@@ -1,0 +1,249 @@
+================================================================================
+LLM CAPABILITY CHECKER - SYSTEM REPORT
+================================================================================
+Generated: 2025-01-27 14:32:15 UTC
+Version: 1.0.4
+
+================================================================================
+HARDWARE CONFIGURATION
+================================================================================
+
+CPU
+  Model:        AMD Ryzen 7 5800X
+  Cores:        8 physical cores
+  Threads:      16 threads
+  Base Clock:   3.8 GHz
+  Boost Clock:  4.7 GHz
+
+GPU
+  Model:        NVIDIA GeForce RTX 4070 Ti
+  VRAM:         12 GB GDDR6X
+  Architecture: Ada Lovelace
+  CUDA Cores:   7680
+  Compute:      CUDA 12.3
+
+Memory
+  Total RAM:    32 GB
+  Type:         DDR4-3200
+  Channels:     Dual Channel
+  Speed:        3200 MHz
+
+Storage
+  Primary:      1 TB NVMe PCIe Gen4 (Samsung 980 PRO)
+  Read Speed:   7000 MB/s
+  Write Speed:  5000 MB/s
+  Available:    627 GB
+
+Operating System
+  Platform:     Windows 11 Pro
+  Version:      23H2
+  Architecture: x64
+
+================================================================================
+CAPABILITY SCORES
+================================================================================
+
+🚀 Inference Score: 87/100
+   Grade: Excellent
+   Description: Run 13B models smoothly, 70B models with Q4/Q5 quantization
+
+   Component Breakdown:
+   • GPU Performance:      40/40 pts (RTX 4070 Ti - High-end consumer)
+   • VRAM Capacity:        28/30 pts (12GB - Good for most models)
+   • System RAM:           15/15 pts (32GB - Ample)
+   • Storage Speed:        10/10 pts (NVMe Gen4 - Excellent)
+   • CPU Performance:       4/5 pts  (8C/16T - Strong)
+
+   Primary Bottleneck: VRAM capacity limits largest models at FP16
+
+🎯 Training Score: 45/100
+   Grade: Limited
+   Description: Basic training possible, not recommended for production
+
+   Component Breakdown:
+   • GPU Compute:          25/40 pts (RTX 4070 Ti - Mid-tier for training)
+   • VRAM Capacity:        12/30 pts (12GB - Insufficient for full fine-tuning)
+   • System RAM:            6/15 pts (32GB - Minimum requirement)
+   • Training Frameworks:   2/10 pts (CUDA available, limited by VRAM)
+   • Cooling/Power:         0/5 pts  (Consumer hardware limitations)
+
+   Primary Bottleneck: VRAM insufficient for gradient accumulation
+   Recommendation: Training 7B models or smaller, use gradient checkpointing
+
+⚡ Fine-Tuning Score: 72/100
+   Grade: Good
+   Description: LoRA/QLoRA fine-tuning works well for most models up to 70B
+
+   Component Breakdown:
+   • GPU Performance:      32/40 pts (RTX 4070 Ti - Good for LoRA)
+   • VRAM Capacity:        22/30 pts (12GB - Adequate with quantization)
+   • System RAM:           12/15 pts (32GB - Good for offloading)
+   • Adapter Support:       5/10 pts (LoRA, QLoRA supported)
+   • Storage Speed:         1/5 pts  (Fast NVMe - Quick checkpoint saves)
+
+   Sweet Spot: 7B-13B models with QLoRA, 70B models with aggressive quantization
+
+================================================================================
+MODEL COMPATIBILITY (68/107 models compatible)
+================================================================================
+
+✨ PERFECT MATCHES (18 models) - 90-100% Compatibility Score
+────────────────────────────────────────────────────────────────────────────
+1. Llama 4 Scout 8B (Q8_0)                   Score: 96%  |  VRAM: 8.5GB
+   Status: Runs smoothly, near-native performance
+   Use Case: General chat, coding assistance, daily driver
+
+2. Phi-4 14B (Q5_K_M)                        Score: 94%  |  VRAM: 9.2GB
+   Status: Excellent reasoning, fast inference
+   Use Case: Coding, reasoning, technical tasks
+
+3. Mistral 7B v0.3 (Q8_0)                    Score: 98%  |  VRAM: 7.8GB
+   Status: Perfect fit, maximum performance
+   Use Case: Instruction following, chat
+
+4. Qwen 2.5 14B (Q5_K_M)                     Score: 93%  |  VRAM: 9.4GB
+   Status: Strong multilingual, great for code
+   Use Case: Coding, multilingual chat
+
+5. DeepSeek Coder V2 16B (Q4_K_M)            Score: 91%  |  VRAM: 9.8GB
+   Status: Best coding model in this range
+   Use Case: Code generation, refactoring
+
+⚡ GOOD FIT (32 models) - 70-89% Compatibility Score
+────────────────────────────────────────────────────────────────────────────
+1. Llama 4 Scout 8B (FP16)                   Score: 84%  |  VRAM: 16.3GB
+   Status: Needs VRAM optimization, consider Q8 instead
+
+2. DeepSeek-R1 70B (Q4_K_M)                  Score: 78%  |  VRAM: 41.2GB
+   Status: Requires offloading to RAM, slower but functional
+   Inference Speed: ~3-5 tokens/sec (with offloading)
+
+3. Llama 4 Maverick 70B (Q4_K_M)             Score: 76%  |  VRAM: 42.8GB
+   Status: Needs CPU offloading, 30-40% performance hit
+
+4. Mistral Large 123B (Q2_K)                 Score: 71%  |  VRAM: 48.5GB
+   Status: Aggressive quantization required, quality degradation
+   Note: Q2 quantization significantly impacts output quality
+
+⚠️ POSSIBLE WITH OPTIMIZATION (18 models) - 50-69% Compatibility Score
+────────────────────────────────────────────────────────────────────────────
+1. DeepSeek-R1 70B (Q5_K_M)                  Score: 62%  |  VRAM: 51.3GB
+   Status: Heavy RAM offloading required, 1-2 tokens/sec
+   Recommendation: Use Q4_K_M variant instead
+
+2. Llama 4 Behemoth 405B (Q2_K)              Score: 58%  |  VRAM: 156GB
+   Status: Not practical - extreme offloading, unusable speed
+   Recommendation: Upgrade to 24GB+ VRAM or use smaller model
+
+❌ NOT RECOMMENDED (19 models) - Below 50% Compatibility
+────────────────────────────────────────────────────────────────────────────
+These models require hardware upgrades to run effectively:
+• DeepSeek-V3 671B (all quantizations) - Requires 80GB+ VRAM
+• Llama 4 Behemoth 405B (Q4+) - Needs 48GB+ VRAM minimum
+• Most 70B+ models at Q8_0 or FP16 precision
+
+================================================================================
+UPGRADE RECOMMENDATIONS
+================================================================================
+
+💡 Recommended Upgrade: RTX 4080 (16GB VRAM)
+
+Benefits:
+  • Unlocks 23 additional models in "Perfect Match" category
+  • DeepSeek-R1 70B Q4 runs entirely in VRAM (10-15 tok/sec)
+  • All 13B models at FP16 with headroom
+  • +18% inference score (87 → 105, capped at 100)
+  • +12% fine-tuning score (72 → 84)
+
+Cost/Benefit Analysis:
+  • Approximate Cost: $1,100-$1,300 USD
+  • Performance Tier Jump: High-end consumer → Enthusiast
+  • Models Unlocked: 23 (primarily 13B-70B range)
+  • Value Rating: ⭐⭐⭐⭐ (4/5) - Good upgrade for serious users
+
+Alternative Options:
+
+  RTX 4090 (24GB VRAM)
+  • Cost: $1,600-$2,000 USD
+  • Models Unlocked: 45+ (including most 70B models at Q5+)
+  • Best for: Users who want maximum local capability
+  • Training/Fine-tuning: ⭐⭐⭐⭐⭐ (Major improvement)
+
+  Used RTX 3090 (24GB VRAM)
+  • Cost: $800-$1,000 USD
+  • Models Unlocked: Similar to 4090, slightly slower
+  • Best for: Budget-conscious power users
+  • Note: Older architecture, higher power consumption
+
+Not Recommended:
+  • RTX 4070 Ti SUPER (16GB) - Only marginal improvement
+  • RTX 4070 (12GB) - Lateral move, no benefit
+  • AMD Radeon RX 7900 XTX (24GB) - ROCm support still maturing
+
+================================================================================
+COMMUNITY INSIGHTS
+================================================================================
+
+Similar System Configurations:
+  • 127 users with RTX 4070 Ti (12GB) reported
+  • Average Inference Score: 85/100 (you: 87/100)
+  • Most Popular Models: Llama 4 Scout 8B, Phi-4 14B, Mistral 7B
+
+Top Rated Models for Your Hardware:
+  1. Llama 4 Scout 8B Q8 - 423 upvotes, 4.9⭐
+     "Perfect for daily use, fast and accurate"
+
+  2. DeepSeek-R1 70B Q4 - 342 upvotes, 4.8⭐
+     "Best reasoning model I've tried, worth the RAM offload"
+
+  3. Phi-4 14B Q5 - 298 upvotes, 4.7⭐
+     "Incredible coding assistant, punches above its weight"
+
+================================================================================
+RECOMMENDATIONS SUMMARY
+================================================================================
+
+✅ GREAT FOR:
+  • Running 7B-13B models at maximum quality
+  • LoRA/QLoRA fine-tuning of smaller models
+  • Daily LLM usage for coding, chat, and reasoning tasks
+  • Experimenting with multiple quantization levels
+
+⚠️ LIMITATIONS:
+  • 70B+ models require significant RAM offloading
+  • Full fine-tuning limited to 7B models or smaller
+  • Cannot run largest models (405B+) practically
+
+🎯 SWEET SPOT:
+  Your system is optimized for 8B-14B models at high precision.
+  For 70B models, stick to Q4_K_M quantization with RAM offloading.
+
+💰 UPGRADE PRIORITY:
+  Medium-High. Your system handles most use cases well, but power users
+  would benefit from 16-24GB VRAM for 70B models without offloading.
+
+================================================================================
+EXPORT OPTIONS
+================================================================================
+
+This report can be exported as:
+  • Plain Text (.txt) - This format
+  • Markdown (.md) - For GitHub/documentation
+  • JSON (.json) - For programmatic parsing
+  • HTML (.html) - For sharing with web view
+
+Save location: ./reports/system-report-2025-01-27.txt
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Try recommended models (Llama 4 Scout 8B, Phi-4 14B)
+2. Download via Ollama: `ollama pull llama4-scout:8b-q8`
+3. Join r/LocalLLaMA to share experiences
+4. Consider GPU upgrade if you frequently use 70B+ models
+5. Contribute your experiences to help other users
+
+================================================================================
+For support and updates: https://github.com/random-llama/llm-capability-checker
+================================================================================

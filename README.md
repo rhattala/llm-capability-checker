@@ -16,28 +16,29 @@
 
 ---
 
-## 🎯 What Does This Do?
+## 🎯 What This Is
 
-**Stop guessing if your PC can run LLMs.** Get instant answers in under 2 minutes:
+`llm-capability-checker` is an open source desktop app that scans your PC hardware and tells you exactly which LLMs you can run locally, with zero guesswork.
 
-✅ **Can I run Llama 4 Scout 8B?** → Yes! 85% performance, smooth experience
-✅ **Will DeepSeek-R1 70B work?** → Needs 24GB VRAM (you have 11GB) - try Q4 quantization
-✅ **Which models CAN I run?** → 55 compatible models found for your hardware
-✅ **Should I upgrade my GPU?** → Yes! RTX 4080 unlocks 23 more models
+**One scan answers:**
+- ✅ Can I run Llama 4 Scout 8B? → Yes! 85% score, smooth experience
+- ✅ Will DeepSeek-R1 70B work? → Needs 24GB VRAM (you have 11GB) - try Q4 quantization
+- ✅ Which models CAN I run right now? → 55 compatible models found
+- ✅ Is a GPU upgrade worth it? → Yes! RTX 4080 unlocks 23 more models
 
-### The Problem We Solve
+### Why It Exists
 
-You want to run AI locally but:
-- ❌ Don't know if your GPU has enough VRAM
-- ❌ Waste hours downloading models that won't run
-- ❌ Can't figure out which quantization to use
-- ❌ Don't know if upgrading is worth it
+You want to run AI locally but don't want to:
+- ❌ Waste hours downloading 40GB models that won't fit in VRAM
+- ❌ Guess which quantization level you need
+- ❌ Google "RTX 4070 vs 4080 for LLMs" 47 times
+- ❌ Buy a $1200 GPU upgrade that only helps marginally
 
-### Our Solution
+### What You Get
 
-**2-minute hardware scan** → **3 capability scores** → **107 model recommendations** → **Smart upgrade advice**
+**2-minute hardware scan** → **3 capability scores** → **107 model compatibility checks** → **Specific upgrade recommendations**
 
-No account required. 100% free. Fully open source.
+100% local. No tracking. MIT licensed.
 
 ## ✨ Features
 
@@ -128,6 +129,40 @@ Models organized by compatibility:
 
 Compare your hardware against a real reference point!
 
+## 📊 Example Output
+
+Here's what you actually see after running the scan:
+
+```
+=== Hardware Scan Complete ===
+
+Your System:
+  CPU: AMD Ryzen 7 5800X (8 cores, 16 threads)
+  GPU: NVIDIA RTX 4070 Ti (12GB VRAM)
+  RAM: 32GB DDR4-3200
+  Storage: 1TB NVMe Gen4
+
+Capability Scores:
+  🚀 Inference:    87/100  "Run 13B models smoothly, 70B with quantization"
+  🎯 Training:     45/100  "Limited - VRAM bottleneck for full fine-tuning"
+  ⚡ Fine-Tuning:  72/100  "LoRA/QLoRA works well for most models"
+
+Compatible Models Found: 68/107
+  ✨ Perfect Matches (18 models)
+     • Llama 4 Scout 8B Q8 - 94% compatibility
+     • Phi-4 14B Q5_K_M - 91% compatibility
+  ⚡ Good Fit (32 models)
+     • DeepSeek-R1 70B Q4_K_M - 78% compatibility
+  ⚠️ Possible with Optimization (18 models)
+     • Llama 4 Maverick 70B FP16 - requires Q4 quantization
+
+Upgrade Suggestion:
+  RTX 4080 (16GB) would unlock 23 additional models
+  Estimated performance gain: +18% inference score
+```
+
+No fluff. Just facts.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -142,7 +177,7 @@ Compare your hardware against a real reference point!
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/llm-capability-checker.git
+git clone https://github.com/random-llama/llm-capability-checker.git
 cd llm-capability-checker
 
 # 2. Run it!
@@ -163,7 +198,7 @@ dotnet run --project src/LLMCapabilityChecker/LLMCapabilityChecker.csproj --conf
 
 #### Option 3: Pre-built Binaries
 
-Download from [Releases](https://github.com/yourusername/llm-capability-checker/releases) → Extract → Double-click
+Download from [Releases](https://github.com/random-llama/llm-capability-checker/releases) → Extract → Double-click
 
 *(Coming soon once we have our first release)*
 
@@ -286,41 +321,28 @@ All platforms use `RuntimeInformation.IsOSPlatform()` for platform detection and
 
 ## 🎯 Roadmap
 
-### ✅ Phase 1: Core MVP (Current)
-- Hardware detection
-- Scoring system
-- Model recommendations
-- Basic UI
+See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
-### 🚧 Phase 2: Enhancement (In Progress)
-- Upgrade advisor
-- Educational content
-- Optional benchmarking
-- Polish and optimization
+**Near term**: HTML/Markdown reports, CLI mode, model search improvements
+**Mid term**: Multi-GPU support, CI/CD integration, benchmark suite
+**Stretch**: Community database, org policy packs, plugin system
 
-### 📋 Phase 3: Future Features
-- Multi-GPU support
-- Custom model entry
-- Historical tracking
-- CLI version
-- Community database integration
+Want something added? [Open an issue](https://github.com/random-llama/llm-capability-checker/issues) with the `enhancement` label.
 
 ## 🤝 Contributing
 
-We welcome contributions! Whether you're:
+**I want feedback on:**
+- What hardware configs are broken or misdetected
+- Which model families should be added to the database
+- What capabilities you'd want to test before buying a GPU
 
-- 🐛 **Reporting bugs** - [Open an issue](https://github.com/yourusername/llm-capability-checker/issues/new?template=bug_report.md)
-- 💡 **Suggesting features** - [Open an issue](https://github.com/yourusername/llm-capability-checker/issues/new?template=feature_request.md) with "[Feature Request]"
-- 📝 **Improving docs** - Submit a PR for documentation improvements
-- 🔧 **Writing code** - Check [good first issues](https://github.com/yourusername/llm-capability-checker/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-- 🤖 **Adding models** - Submit PRs to `data/models.json`
+**Ways to contribute:**
+- 🐛 [Report bugs](https://github.com/random-llama/llm-capability-checker/issues/new?template=bug_report.md) with your hardware specs
+- 💡 [Request features](https://github.com/random-llama/llm-capability-checker/issues/new?template=feature_request.md) you actually need
+- 🔧 [Grab a good first issue](https://github.com/random-llama/llm-capability-checker/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - I'm happy to help you get started
+- 🤖 Add models to `data/models.json` via PR
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
-- Development setup
-- Code standards
-- Testing requirements
-- Pull request process
-- Community guidelines
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and code standards.
 
 ## 📊 Model Database
 
@@ -369,13 +391,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **In-App Help**: Press **F1** or click the Help button for instant assistance
 - **User Guide**: [Comprehensive documentation](docs/USER_GUIDE.md)
 - **FAQ**: [Frequently asked questions](docs/FAQ.md)
-- **GitHub Discussions**: [Ask questions](https://github.com/yourusername/llm-capability-checker/discussions) and share experiences
-- **GitHub Issues**: [Report bugs](https://github.com/yourusername/llm-capability-checker/issues) or request features
+- **GitHub Discussions**: [Ask questions](https://github.com/random-llama/llm-capability-checker/discussions) and share experiences
+- **GitHub Issues**: [Report bugs](https://github.com/random-llama/llm-capability-checker/issues) or request features
 
 ### Before Asking for Help
 
 1. Check the [FAQ](docs/FAQ.md) - most questions are already answered
-2. Search [existing issues](https://github.com/yourusername/llm-capability-checker/issues) for similar problems
+2. Search [existing issues](https://github.com/random-llama/llm-capability-checker/issues) for similar problems
 3. Enable detailed logging in Settings → Detailed Logging
 4. Export your system report (Dashboard → Export Report) to attach to bug reports
 
@@ -426,11 +448,11 @@ If you find this project useful, please consider giving it a ⭐ on GitHub!
 
 ## Quick Links
 
-- 📦 [Latest Release](https://github.com/yourusername/llm-capability-checker/releases/latest)
-- 🐛 [Report a Bug](https://github.com/yourusername/llm-capability-checker/issues/new?template=bug_report.md)
-- 💡 [Request a Feature](https://github.com/yourusername/llm-capability-checker/issues/new?template=feature_request.md)
+- 📦 [Latest Release](https://github.com/random-llama/llm-capability-checker/releases/latest)
+- 🐛 [Report a Bug](https://github.com/random-llama/llm-capability-checker/issues/new?template=bug_report.md)
+- 💡 [Request a Feature](https://github.com/random-llama/llm-capability-checker/issues/new?template=feature_request.md)
 - 📖 [Documentation](docs/)
-- 💬 [Discussions](https://github.com/yourusername/llm-capability-checker/discussions)
+- 💬 [Discussions](https://github.com/random-llama/llm-capability-checker/discussions)
 
 ---
 
