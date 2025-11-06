@@ -200,6 +200,146 @@ public class ReportExportService : IReportExportService
     }
 
     /// <inheritdoc/>
+    public Task<string> ExportAsMarkdownAsync(HardwareInfo hardwareInfo, SystemScores systemScores, List<ModelInfo> recommendedModels)
+    {
+        try
+        {
+            var sb = new StringBuilder();
+
+            // Header
+            sb.AppendLine($"# LLM Capability Checker Report");
+            sb.AppendLine($"*Generated: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}*");
+            sb.AppendLine();
+
+            // System Overview
+            sb.AppendLine("## System Overview");
+            sb.AppendLine("| Metric | Value |");
+            sb.AppendLine("|--------|-------|");
+            sb.AppendLine($"| Overall Score | {systemScores.OverallScore}/100 |");
+            sb.AppendLine($"| System Tier | {systemScores.SystemTier} |");
+            sb.AppendLine($"| Recommended Model Size | {systemScores.RecommendedModelSize} |");
+            sb.AppendLine($"| Primary Bottleneck | {systemScores.PrimaryBottleneck} |");
+            sb.AppendLine($"| Operating System | {hardwareInfo.OperatingSystem} |");
+            sb.AppendLine();
+
+            // Hardware Information
+            sb.AppendLine("## Hardware Information");
+
+            sb.AppendLine("### CPU");
+            sb.AppendLine("| Property | Value |");
+            sb.AppendLine("|----------|-------|");
+            sb.AppendLine($"| Model | {hardwareInfo.Cpu.Model} |");
+            sb.AppendLine($"| Cores | {hardwareInfo.Cpu.Cores} |");
+            sb.AppendLine($"| Threads | {hardwareInfo.Cpu.Threads} |");
+            sb.AppendLine($"| Base Clock | {hardwareInfo.Cpu.BaseClockGHz:F2} GHz |");
+            sb.AppendLine($"| Architecture | {hardwareInfo.Cpu.Architecture} |");
+            sb.AppendLine($"| AVX2 | {(hardwareInfo.Cpu.SupportsAvx2 ? "✅" : "❌")} |");
+            sb.AppendLine($"| AVX-512 | {(hardwareInfo.Cpu.SupportsAvx512 ? "✅" : "❌")} |");
+            sb.AppendLine();
+
+            sb.AppendLine("### GPU");
+            sb.AppendLine("| Property | Value |");
+            sb.AppendLine("|----------|-------|");
+            sb.AppendLine($"| Model | {hardwareInfo.Gpu.Model} |");
+            sb.AppendLine($"| Vendor | {hardwareInfo.Gpu.Vendor} |");
+            sb.AppendLine($"| VRAM | {hardwareInfo.Gpu.VramGB} GB |");
+            sb.AppendLine($"| Architecture | {hardwareInfo.Gpu.Architecture} |");
+            sb.AppendLine($"| Compute Capability | {hardwareInfo.Gpu.ComputeCapability} |");
+            sb.AppendLine($"| Type | {(hardwareInfo.Gpu.IsDedicated ? "Dedicated" : "Integrated")} |");
+            sb.AppendLine($"| FP16 | {(hardwareInfo.Gpu.SupportsFp16 ? "✅" : "❌")} |");
+            sb.AppendLine($"| INT8 | {(hardwareInfo.Gpu.SupportsInt8 ? "✅" : "❌")} |");
+            sb.AppendLine();
+
+            sb.AppendLine("### Memory");
+            sb.AppendLine("| Property | Value |");
+            sb.AppendLine("|----------|-------|");
+            sb.AppendLine($"| Total RAM | {hardwareInfo.Memory.TotalGB} GB |");
+            sb.AppendLine($"| Available RAM | {hardwareInfo.Memory.AvailableGB} GB |");
+            sb.AppendLine($"| Type | {hardwareInfo.Memory.Type} |");
+            sb.AppendLine($"| Speed | {hardwareInfo.Memory.SpeedMHz} MHz |");
+            sb.AppendLine();
+
+            sb.AppendLine("### Storage");
+            sb.AppendLine("| Property | Value |");
+            sb.AppendLine("|----------|-------|");
+            sb.AppendLine($"| Type | {hardwareInfo.Storage.Type} |");
+            sb.AppendLine($"| Total | {hardwareInfo.Storage.TotalGB} GB |");
+            sb.AppendLine($"| Available | {hardwareInfo.Storage.AvailableGB} GB |");
+            sb.AppendLine($"| Read Speed | {hardwareInfo.Storage.ReadSpeedMBps} MB/s |");
+            sb.AppendLine($"| Write Speed | {hardwareInfo.Storage.WriteSpeedMBps} MB/s |");
+            sb.AppendLine();
+
+            sb.AppendLine("### ML Frameworks");
+            sb.AppendLine("| Framework | Installed |");
+            sb.AppendLine("|-----------|-----------|");
+            sb.AppendLine($"| CUDA | {(hardwareInfo.Frameworks.HasCuda ? $"✅ ({hardwareInfo.Frameworks.CudaVersion})" : "❌")} |");
+            sb.AppendLine($"| ROCm | {(hardwareInfo.Frameworks.HasRocm ? $"✅ ({hardwareInfo.Frameworks.RocmVersion})" : "❌")} |");
+            sb.AppendLine($"| Metal | {(hardwareInfo.Frameworks.HasMetal ? "✅" : "❌")} |");
+            sb.AppendLine($"| DirectML | {(hardwareInfo.Frameworks.HasDirectMl ? "✅" : "❌")} |");
+            sb.AppendLine($"| OpenVINO | {(hardwareInfo.Frameworks.HasOpenVino ? "✅" : "❌")} |");
+            sb.AppendLine();
+
+            // Component Scores
+            sb.AppendLine("## Component Scores");
+            sb.AppendLine("| Component | Score |");
+            sb.AppendLine("|-----------|-------|");
+            sb.AppendLine($"| CPU | {systemScores.Breakdown.CpuScore}/100 |");
+            sb.AppendLine($"| Memory | {systemScores.Breakdown.MemoryScore}/100 |");
+            sb.AppendLine($"| GPU | {systemScores.Breakdown.GpuScore}/100 |");
+            sb.AppendLine($"| Storage | {systemScores.Breakdown.StorageScore}/100 |");
+            sb.AppendLine($"| Framework | {systemScores.Breakdown.FrameworkScore}/100 |");
+            sb.AppendLine();
+
+            // Recommended Models
+            sb.AppendLine("## Recommended Models");
+            if (recommendedModels.Any())
+            {
+                for (int i = 0; i < recommendedModels.Count; i++)
+                {
+                    var model = recommendedModels[i];
+                    sb.AppendLine($"### {i + 1}. {model.Name}");
+                    sb.AppendLine($"- Family: {model.Family}");
+                    sb.AppendLine($"- Parameter Size: {model.ParameterSize}");
+                    sb.AppendLine($"- Compatibility Score: {model.CompatibilityScore}%");
+                    sb.AppendLine($"- Expected Performance: {model.ExpectedPerformance}");
+                    sb.AppendLine($"- Description: {model.Description}");
+                    if (!string.IsNullOrEmpty(model.Url))
+                        sb.AppendLine($"- URL: {model.Url}");
+                    if (model.Requirements != null)
+                    {
+                        sb.AppendLine($"- Min VRAM: {model.Requirements.MinVramGB} GB");
+                        sb.AppendLine($"- Min RAM: {model.Requirements.MinRamGB} GB");
+                        sb.AppendLine($"- Min Storage: {model.Requirements.MinStorageGB} GB");
+                    }
+                    sb.AppendLine();
+                }
+            }
+            else
+            {
+                sb.AppendLine("No models recommended for this system configuration.");
+            }
+
+            // Upgrade Recommendations (example based on bottleneck)
+            sb.AppendLine("## Upgrade Recommendations");
+            if (!string.IsNullOrEmpty(systemScores.PrimaryBottleneck))
+            {
+                sb.AppendLine($"- Consider upgrading: **{systemScores.PrimaryBottleneck}** to improve overall system performance.");
+            }
+            else
+            {
+                sb.AppendLine("- System configuration is balanced, no immediate upgrades suggested.");
+            }
+
+            return Task.FromResult(sb.ToString());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to export report as Markdown");
+            throw;
+        }
+    }
+
+    /// <inheritdoc/>
     public async Task<bool> SaveReportToFileAsync(string content, string suggestedFileName)
     {
         try
